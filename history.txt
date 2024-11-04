@@ -1,4 +1,4 @@
-python main.py invoice_rolls_royce sd  /Users/hieuthanh/Desktop/OCR/pdf/invoice_rr.pdf
+python main.py invoice rolls_royce  /Users/hieuthanh/Desktop/OCR/pdf/invoice_rr.pdf
 python main.py credit ge  /Users/hieuthanh/Desktop/OCR/pdf/Credit-GE.pdf
 python main.py repair pratt_whitney_canada /Users/hieuthanh/Desktop/OCR/pdf/repair.pdf
 python main.py invoice celestial /Users/hieuthanh/Desktop/OCR/pdf/celestial.pdf
