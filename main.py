@@ -12,7 +12,12 @@ import logging
 import time
 from common import *
 from pdf_readers import *
-    
+from dotenv import load_dotenv
+
+load_dotenv()
+
+poppler_path = os.getenv("POPPLER_PATH")
+
 #----------------------------------------------------------------
 # MAIN
 #----------------------------------------------------------------
@@ -26,9 +31,13 @@ def extract_data(type_invoice, code, file_path):
         file_path (str): Đường dẫn tới file PDF cần xử lý.
     """
     try:
+        if type_invoice == TypeInvoice.LC.value and code == Code.GE.value:
+            classifier_invoice_lc_ge(file_path)
         with pdfplumber.open(file_path) as pdf:
             if type_invoice == TypeInvoice.CREDIT.value and code == Code.GE.value:
                 classifier_invoice_credit(pdf.pages)
+            if type_invoice == TypeInvoice.LC.value and code == Code.MTU.value:
+                classifier_lc_mtu_invoice(pdf.pages)
             if type_invoice == TypeInvoice.REPAIR.value and code == Code.PRATT_WHITNEY_CANADA.value:
                 classifier_repair_invoice(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.HONEY_WELL.value:

@@ -1,5 +1,4 @@
 import json
-import json
 
 class Invoice:
     def __init__(self, inv_no: str):

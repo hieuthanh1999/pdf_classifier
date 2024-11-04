@@ -10,6 +10,9 @@ from type import  *
 import time
 from common import *
 from pdf_readers import *
+from pdf2image import convert_from_path
+from PIL import Image
+import pytesseract
 
 @time_execution
 def classifier_invoice_credit(pages):
@@ -53,6 +56,26 @@ def classifier_invoice_credit(pages):
                 except: pass
         #0.2s
         print(invoice.to_string())           
+    except Exception as e:
+        logger.error("Error invoice credit: %s", str(e))
+        return None
+
+
+@time_execution
+def classifier_invoice_lc_ge(path):
+    try:
+        pages = convert_from_path(path, dpi=300, poppler_path=r'/Users/hieuthanh/Desktop/OCR/pdf_classifier/Release-24/Library/bin')
+        invoice_texts = []
+        for p_idx, page in enumerate(pages):
+            text = pytesseract.image_to_string(page, lang='eng') 
+            invoice_texts.append(text)
+            logger.info("Text from page %d: %s", p_idx + 1, text)
+        
+        # for p_idx, page in enumerate(pages):
+        #     text = page.extract_text().split('\n')
+        #     logger.info("%s", text)     
+        #     for i, e in enumerate(text):
+        #         logger.info("%s", e)          
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None

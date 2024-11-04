@@ -11,4 +11,5 @@ class Code(Enum):
     ROLLS_ROYCE = 'rolls_royce'
     HONEY_WELL = 'honey_well'
     CELESTIAL = 'celestial'
+    MTU = 'mtu'
     
