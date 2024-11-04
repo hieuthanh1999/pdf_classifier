@@ -23,13 +23,22 @@ def to_string(value):
     except (ValueError, TypeError):
         return ''
 
-def to_float_regex(value):
-    value = re.sub(r'[^-\d.]', '', value)
 
+def to_float_regex(value):
+    """
+    Chuyển đổi một chuỗi đầu vào thành kiểu số thực (float) sau khi loại bỏ các ký tự không hợp lệ.
+
+    Parameters:
+        value (str): Chuỗi đầu vào cần chuyển đổi.
+
+    Returns:
+        float: Giá trị số thực sau khi chuyển đổi. Nếu chuyển đổi thất bại, trả về 0.0.
+    """
+    value = re.sub(r'[^-\d.]', '', value)
+    
     try:
         return float(value)
     except ValueError:
-        logger.error(f"Đã xảy ra lỗi khi convert: {value}")
         return 0.0
 
 
@@ -63,10 +72,8 @@ def to_percentage(value):
                Trả về 0.0 nếu có lỗi xảy ra.
     """
     try:
-        # Loại bỏ ký hiệu '%' và các khoảng trắng
         value = value.replace('%', '').strip()
-        # Chuyển đổi chuỗi thành số thực
-        return float(value.replace(',', '')) / 100  # Chia cho 100 để chuyển thành số thực
+        return float(value.replace(',', '')) / 100
     except (ValueError, TypeError):
         return 0.0
  

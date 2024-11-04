@@ -4,34 +4,27 @@ import json
 import re
 import os
 import sys
-from enum import Enum
 import pdfplumber
 from model import *
 from type import  *
+from enums import  *
 import logging
 import time
 from common import *
 from pdf_readers import *
-
-class TypeInvoice(Enum):
-    INVOICE = 'invoice'
-    REPAIR = 'repair'
-    LC = 'lc'
-    CREDIT = 'credit'
-
-class Code(Enum):
-    IAE = 'iae'
-    GE = 'ge'
-    PRATT_WHITNEY_CANADA = 'pratt_whitney_canada'
-    AMECO = 'ameco'
-    ROLLS_ROYCE = 'rolls_royce'
-    HONEY_WELL = 'honey_well'
-    CELESTIAL = 'celestial'
     
 #----------------------------------------------------------------
 # MAIN
 #----------------------------------------------------------------
 def extract_data(type_invoice, code, file_path):
+    """
+    Hàm này trích xuất dữ liệu từ file PDF dựa trên loại hóa đơn và mã hóa.
+    
+    Parameters:
+        type_invoice (str): Loại hóa đơn cần xử lý.
+        code (str): Mã hóa đại diện cho nhà cung cấp.
+        file_path (str): Đường dẫn tới file PDF cần xử lý.
+    """
     try:
         with pdfplumber.open(file_path) as pdf:
             if type_invoice == TypeInvoice.CREDIT.value and code == Code.GE.value:
@@ -56,9 +49,6 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_iae(pdf.pages)
             if type_invoice == 'stand_aero':
                 classifier_invoice_stand_aero(pdf.pages)
-
-                
-                
         pdf.close()
     except IOError as e:
         print({"error": "Không thể mở tập tin " + str(e)})
