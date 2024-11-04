@@ -1,0 +1,119 @@
+# common/utils.py
+from types import SimpleNamespace
+import json
+import time
+from common import *
+
+def keyword(type):
+    return SimpleNamespace(**type)
+
+def to_string(value):
+    """
+    Chuyển đổi giá trị thành chuỗi, loại bỏ khoảng trắng ở đầu và cuối.
+    
+    Args:
+        value: Giá trị cần chuyển đổi (có thể là bất kỳ kiểu dữ liệu nào).
+    
+    Returns:
+        str: Chuỗi đã được chuyển đổi và loại bỏ khoảng trắng.
+              Trả về chuỗi rỗng nếu có lỗi xảy ra.
+    """
+    try:
+        return str(value).strip()
+    except (ValueError, TypeError):
+        return ''
+
+def to_float_regex(value):
+    value = re.sub(r'[^-\d.]', '', value)
+
+    try:
+        return float(value)
+    except ValueError:
+        logger.error(f"Đã xảy ra lỗi khi convert: {value}")
+        return 0.0
+
+
+def to_int(value):
+    """
+    Chuyển đổi giá trị thành số nguyên (int), loại bỏ dấu '-' ở cuối nếu có.
+    
+    Args:
+        value: Chuỗi đại diện cho số (có thể chứa dấu phẩy và dấu '-').
+    
+    Returns:
+        int: Giá trị số nguyên đã được chuyển đổi.
+             Trả về 0 nếu có lỗi xảy ra.
+    """
+    try:
+        if isinstance(value, str) and value.endswith('-'):
+            value = value[:-1]
+        return int(value.replace(',', ''))
+    except (ValueError, TypeError):
+        return 0
+    
+def to_percentage(value):
+    """
+    Chuyển đổi giá trị phần trăm thành số thực (float), loại bỏ ký hiệu '%' nếu có.
+
+    Args:
+        value: Chuỗi đại diện cho phần trăm (có thể chứa dấu phẩy và ký hiệu '%').
+
+    Returns:
+        float: Giá trị số thực đã được chuyển đổi.
+               Trả về 0.0 nếu có lỗi xảy ra.
+    """
+    try:
+        # Loại bỏ ký hiệu '%' và các khoảng trắng
+        value = value.replace('%', '').strip()
+        # Chuyển đổi chuỗi thành số thực
+        return float(value.replace(',', '')) / 100  # Chia cho 100 để chuyển thành số thực
+    except (ValueError, TypeError):
+        return 0.0
+ 
+def to_float(value):
+    """
+    Chuyển đổi giá trị thành số thực (float), loại bỏ dấu '-' ở cuối nếu có.
+    
+    Args:
+        value: Chuỗi đại diện cho số (có thể chứa dấu phẩy và dấu '-').
+    
+    Returns:
+        float: Giá trị số thực đã được chuyển đổi.
+               Trả về 0.0 nếu có lỗi xảy ra.
+    """
+    try:
+        if value.endswith('-'):
+            value = value[:-1] 
+        return float(value.replace(',', ''))
+    except (ValueError, TypeError):
+        return 0.0 
+    
+
+def write_json_to_file(data, file_path = 'output/output.json'):
+    """
+    Ghi dữ liệu vào file JSON.
+
+    :param data: Dữ liệu cần ghi (có thể là dict, list, ...)
+    :param file_path: Đường dẫn đến file JSON
+    """
+    try:
+        with open(file_path, 'w', encoding='utf-8') as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
+    except Exception as e:
+        logger.error(f"Đã xảy ra lỗi khi ghi file: {e}")
+
+def time_execution(func):
+    """
+    Decorator để tính thời gian thực thi của một hàm.
+
+    :param func: Hàm cần tính thời gian thực thi
+    :return: Kết quả của hàm và thời gian thực thi
+    """
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        logger.info(f"Thời gian thực thi của hàm '{func.__name__}': {execution_time:.4f} s")
+        return result
+    return wrapper

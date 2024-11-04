@@ -1,2 +1,1 @@
-# pdf_classifier
-pdf_classifier
+# Cài Đặt Môi Trường Python 3.10 Trên CentOS
