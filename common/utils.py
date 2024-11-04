@@ -4,7 +4,18 @@ import json
 import time
 from common import *
 
+from types import SimpleNamespace
+
 def keyword(type):
+    """
+    Chuyển đổi một từ điển (dictionary) thành một đối tượng SimpleNamespace.
+
+    Parameters:
+        type (dict): Một từ điển chứa các cặp khóa-giá trị.
+
+    Returns:
+        SimpleNamespace: Đối tượng chứa các thuộc tính tương ứng với các khóa trong từ điển.
+    """
     return SimpleNamespace(**type)
 
 def to_string(value):
