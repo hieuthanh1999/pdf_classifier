@@ -348,7 +348,7 @@ def classifier_repair_invoice(pages):
             if page_name:
                 page_data[page_name] = details 
         #write_json_to_file(page_data)
-        # with open('output.json', 'w', encoding='utf-8') as file:
+        # with open('output/output.json', 'w', encoding='utf-8') as file:
         #     json.dump(page_data, file, ensure_ascii=False, indent=4)
         print(json.dumps(page_data, indent=4))
         #print(page_data)           

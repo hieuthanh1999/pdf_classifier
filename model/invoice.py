@@ -1,14 +1,14 @@
 import json
 
 class Invoice:
-    def __init__(self, inv_no: str):
+    def __init__(self):
         """
         Khởi tạo một đối tượng Invoice với số hóa đơn.
 
         Parameters:
             inv_no (str): Số hóa đơn được gán cho thuộc tính inv_no của đối tượng.
         """
-        self.inv_no = inv_no
+        pass
 
     def to_string(self):
         """
