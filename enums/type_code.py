@@ -13,4 +13,5 @@ class Code(Enum):
     CELESTIAL = 'celestial'
     MTU = 'mtu'
     WILLS = 'wills'
-    PW = 'pw'    
+    PW = 'pw'   
+    WLFC = 'wlfc' 

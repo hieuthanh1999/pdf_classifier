@@ -10,5 +10,6 @@ from .invoice_epcor import classifier_invoice_invoice_epcor
 from .invoice_mtu import classifier_lc_mtu_invoice
 from .invoice_pw import classifier_invoice_pw
 from .invoice_wills import classifier_invoice_wills
+from .invoice_wlfc import classifier_invoice_wlfc
 
 

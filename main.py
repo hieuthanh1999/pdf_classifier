@@ -39,6 +39,8 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_credit(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.WILLS.value:
                 classifier_invoice_wills(pdf.pages)
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.WLFC.value:
+                classifier_invoice_wlfc(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.PW.value:
                 classifier_invoice_pw(pdf.pages)
             if type_invoice == TypeInvoice.LC.value and code == Code.MTU.value:
