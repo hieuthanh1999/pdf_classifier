@@ -58,6 +58,8 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_iae(pdf.pages)
             if type_invoice == 'stand_aero':
                 classifier_invoice_stand_aero(pdf.pages)
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.AMECO_3.value:
+                classifier_invoice_ameco_3(pdf.pages)
         pdf.close()
     except IOError as e:
         print({"error": "Không thể mở tập tin " + str(e)})

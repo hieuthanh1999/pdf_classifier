@@ -89,3 +89,97 @@ def classifier_invoice_ameco(pages):
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None
+    
+@time_execution
+def classifier_invoice_ameco_3(pages):
+    try:
+        page_data = {}
+        key_data = {}
+        list_table_item = []
+        list_table_rpl = []
+        
+        key = keyword(ameco)
+        rpl = False
+        for p_idx, page in enumerate(pages):
+            text = page.extract_text().split('\n')
+            table_data = []
+            invoice_no = None
+            page_name = None
+            details = {}
+            
+            for i, line in enumerate(text):
+                # model = None;
+                # if 'Replacable Parts List' in line:
+                #     model = Details("")
+                #     print(text[i+1])
+                # pattern = r'P/N:(P-\d+)'
+                # match = re.search(pattern, line)
+                # if match:
+                #     invoice_no = match.group(1)
+                #print(line)
+                
+                try:
+                    if 'Replacable Parts List' in line:
+                        rpl = True
+                        page_name = 'rpl'
+                    pass
+                except: pass
+                if rpl:
+                    if 'A1--小计/SUBTOTAL (USD) :' in line:
+                        values = line.split('$')
+                        sub_total_total_price =to_float(to_string(values[1].replace(' ', '')))
+                        sub_total_handling = to_float(to_string(values[2]).replace(' ', ''))
+                    elif 'A2—Handling fees手续费(=A1*0.05)' in line:
+                        values = line.split('$')
+                        handling_fee = to_float(to_string(values[1].replace(' ', '')))
+                    elif 'A3—Total Total总计(=A1+A2)' in line:
+                        values = line.split('$')
+                        total = to_float(to_string(values[1].replace(' ', '')))
+                        rpl = False
+                    else:
+                        pattern = r"(\d+)\s+([\w-]+)\s+([A-Za-z0-9\s,/-]+?)\s+(\d+)\s+(\w+)\s*\$?\s*([\d,]+\.\d{2})\s*\$?\s*([\d,]+\.\d{2})\s*\$?\s*([\d,]+\.\d{2})\s*\$?\s*([\d,]+\.\d{2})\s+([A-Za-z\s]+)?"
+                        match = re.search(pattern, line)
+                        if match:
+                            model = Details("")
+                            model.item = match.group(1)
+                            model.part_number = match.group(2)
+                            model.description = match.group(3)
+                            model.quantity = match.group(4)
+                            model.unit = match.group(5)
+                            model.clp = match.group(6)
+                            model.unit_price = match.group(7)
+                            model.total_price = match.group(8)
+                            model.handling = match.group(9)
+                            model.remark = match.group(10)
+                            list_table_rpl.append(model.to_dict())
+            tables = page.extract_tables()
+            for table in tables:
+                header = None
+                for row in table:
+                    if "Amount" in row:
+                        header = row
+                    elif header and any(row):
+                        data_row = {header[i]: row[i] for i in range(len(header)) if header[i] is not None and header[i] != ''}
+                        # Clean "Items" value
+                        if "Items" in data_row:
+                            cleaned_item_lines = [''.join(line.split()) for line in data_row["Items"].split('\n')]
+                            cleaned_item_values = '\n'.join(cleaned_item_lines)
+                            data_row["Items"] = cleaned_item_values
+                        # Process "Amount" value
+                        if "Amount" in data_row:
+                            amount_value = data_row["Amount"]
+                            if amount_value:
+                                # Remove the first character and convert to float
+                                cleaned_amount_value = to_float(amount_value[1:])
+                                data_row["Amount"] = cleaned_amount_value
+                        if data_row["Items"] == '':
+                                page_data['total_items_price'] = data_row["Amount"]
+                        list_table_item.append(data_row)
+            # match = re.search()   
+        page_data['table_items'] = list_table_item
+        page_data['table_rpl'] = list_table_rpl
+        write_json_to_file(page_data)
+
+    except Exception as e:
+        logger.error("Error invoice credit: %s", str(e))
+        return None
