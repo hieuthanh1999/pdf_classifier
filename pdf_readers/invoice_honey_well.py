@@ -71,8 +71,8 @@ def classifier_honey_well_invoice(pages):
             page_data[page_name] = details
 
 
-        write_json_to_file(page_data)
-        #print(invoice.to_string())           
+        #write_json_to_file(page_data)
+        print(json.dumps(page_data, indent=4))     
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None

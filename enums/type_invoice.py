@@ -9,4 +9,5 @@ class TypeInvoice(Enum):
     LC = 'lc'
     CREDIT = 'credit'
 
+
     

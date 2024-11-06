@@ -34,8 +34,13 @@ def extract_data(type_invoice, code, file_path):
         if type_invoice == TypeInvoice.LC.value and code == Code.GE.value:
             classifier_invoice_lc_ge(file_path)
         with pdfplumber.open(file_path) as pdf:
+            
             if type_invoice == TypeInvoice.CREDIT.value and code == Code.GE.value:
                 classifier_invoice_credit(pdf.pages)
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.WILLS.value:
+                classifier_invoice_wills(pdf.pages)
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.PW.value:
+                classifier_invoice_pw(pdf.pages)
             if type_invoice == TypeInvoice.LC.value and code == Code.MTU.value:
                 classifier_lc_mtu_invoice(pdf.pages)
             if type_invoice == TypeInvoice.REPAIR.value and code == Code.PRATT_WHITNEY_CANADA.value:
