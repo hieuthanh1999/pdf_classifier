@@ -1,4 +1,7 @@
-# How to install python 3.9 on ubuntu
+# How to install python 3.9 on ubuntu and windows
+
+
+## How to install python 3.9 on ubuntu
 - Install packages
 - Download python3.9
 - Build and install python binaries
@@ -65,4 +68,14 @@ You need to add the following line to your `~/.bash_profile` or `~/.bashrc` or `
 
 
 
+## How to install python 3.9 on windows
+- Install with links
+- https://www.tutorials24x7.com/python/how-to-install-python-39-on-windows
 
+
+## Hướng dẫn chạy:
+- cd đường dẫn thư mục pdf_classifier run:
+- python/python3 main.py <type> <code> <path>
+- ví dụ: python main.py invoice rolls_royce /Users/hieuthanh/Desktop/OCR/pdf/invoice_rr.pdf
+- hoặc có thể chạy: 
+- python/python3 <path>/main.py <type> <code> <path>
