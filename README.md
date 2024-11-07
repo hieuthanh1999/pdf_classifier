@@ -73,9 +73,16 @@ You need to add the following line to your `~/.bash_profile` or `~/.bashrc` or `
 - https://www.tutorials24x7.com/python/how-to-install-python-39-on-windows
 
 
-## Hướng dẫn chạy:
-- cd đường dẫn thư mục pdf_classifier run:
-- python/python3 main.py <type> <code> <path>
-- ví dụ: python main.py invoice rolls_royce /Users/hieuthanh/Desktop/OCR/pdf/invoice_rr.pdf
-- hoặc có thể chạy: 
-- python/python3 <path>/main.py <type> <code> <path>
+# Hướng dẫn chạy:
+## cd đường dẫn thư mục pdf_classifier run:
+```bash
+> python/python3/python3.9  main.py <type> <code> <path>
+```
+## ví dụ: 
+```bash
+> python main.py invoice rolls_royce /Users/hieuthanh/Desktop/OCR/pdf/invoice_rr.pdf
+```
+## hoặc có thể chạy: 
+```bash
+> python/python3/python3.9 <path>/main.py <type> <code> <path>
+```
