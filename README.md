@@ -68,7 +68,7 @@ You need to add the following line to your `~/.bash_profile` or `~/.bashrc` or `
 
 
 
-## How to install python 3.9 on windows
+# How to install python 3.9 on windows
 - Install with links
 - https://www.tutorials24x7.com/python/how-to-install-python-39-on-windows
 
