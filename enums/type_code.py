@@ -15,4 +15,5 @@ class Code(Enum):
     MTU = 'mtu'
     WILLS = 'wills'
     PW = 'pw'   
-    WLFC = 'wlfc' 
+    WLFC = 'wlfc'
+    EPCOR = 'epcor' 
