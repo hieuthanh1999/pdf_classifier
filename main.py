@@ -31,6 +31,7 @@ def extract_data(type_invoice, code, file_path):
         file_path (str): Đường dẫn tới file PDF cần xử lý.
     """
     try:
+        logger.info("Info: type_invoice : %s ====== code: %s ====== path: %s ", type_invoice, code, file_path)
         if type_invoice == TypeInvoice.LC.value and code == Code.GE.value:
             classifier_invoice_lc_ge(file_path)
         with pdfplumber.open(file_path) as pdf:

@@ -22,7 +22,7 @@ def classifier_invoice_wlfc(pages):
         for p_idx, page in enumerate(pages):
             text = page.extract_text().split('\n')
             for i, line in enumerate(text):
-                logger.info("%s", line)
+                #logger.info("%s", line)
                 if "Invoice No" in line:
                     try:
                         match = re.search(r"Invoice No:\s*(.*)", line)
