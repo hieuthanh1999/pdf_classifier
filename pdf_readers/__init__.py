@@ -2,7 +2,7 @@ from .invoice_credit import classifier_invoice_credit, classifier_invoice_lc_ge
 from .invoice_repair import classifier_repair_invoice
 from .invoice_honey_well import classifier_honey_well_invoice
 from .invoice_rolls_royce import classifier_invoice_rolls_royce,classifier_invoice_credit_rolls_royce
-from .invoice_ameco import classifier_invoice_ameco, classifier_invoice_lc_ameco
+from .invoice_ameco import classifier_invoice_ameco, classifier_invoice_lc_ameco, classifier_invoice_ameco_3
 from .invoice_celestial import classifier_invoice_celestial
 from .invoice_iae import classifier_invoice_iae
 from .invoice_stand_aero import classifier_invoice_stand_aero
