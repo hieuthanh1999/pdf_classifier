@@ -1,4 +1,4 @@
-# How to install python 3.9 on ubuntu 18.04
+# How to install python 3.9 on ubuntu
 - Install packages
 - Download python3.9
 - Build and install python binaries
