@@ -17,3 +17,4 @@ class Code(Enum):
     PW = 'pw'   
     WLFC = 'wlfc'
     EPCOR = 'epcor' 
+    EPCOR_2 = 'epcor_2'

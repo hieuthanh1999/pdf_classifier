@@ -61,7 +61,7 @@ def extract_data(type_invoice, code, file_path):
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.CELESTIAL.value:
                 classifier_invoice_celestial(pdf.pages)
             if type_invoice == 'invoice_epcor':
-                classifier_invoice_invoice_epcor(pdf.pages)
+                classifier_invoice_epcor(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.IAE.value:
                 classifier_invoice_iae(pdf.pages)
             if type_invoice == 'stand_aero':
@@ -69,7 +69,9 @@ def extract_data(type_invoice, code, file_path):
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.AMECO_3.value:
                 classifier_invoice_ameco_3(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.EPCOR.value:
-                classifier_invoice_invoice_epcor(pdf.pages)
+                classifier_invoice_epcor(pdf.pages)
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.EPCOR_2.value:
+                classifier_invoice_epcor_2(pdf.pages)
         pdf.close()
     except IOError as e:
         print({"error": "Không thể mở tập tin " + str(e)})
