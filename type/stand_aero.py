@@ -1,0 +1,15 @@
+stand_aero = {
+    'labor' : 'Labor',
+    'component_repair' : 'Component Repairs',
+    'replacement_parts' : 'Replacement Parts',
+    'rotable_or_special_processes' : 'Rotable / Special Process',
+    'test_cell_fee' : 'Test Cell Fee',
+    'packing_and_preservation' : 'Packing and Preservation',
+    'bulk_issue' : 'Bulk Issue',
+    'inclusive_of_pandwc' : 'Inclusive of P&WC Warranty Credits',
+    'sub_total' : 'SUB-TOTAL',
+    'shipping' : 'Shipping',
+    'TOTAL' : 'TOTAL',
+    'invoice_number' : 'Invoice #:',
+    'date' : 'Date:',
+}

@@ -18,3 +18,4 @@ class Code(Enum):
     WLFC = 'wlfc'
     EPCOR = 'epcor' 
     EPCOR_2 = 'epcor_2'
+    STAND_AERO = 'stand_aero'
