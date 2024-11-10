@@ -64,7 +64,7 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_epcor(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.IAE.value:
                 classifier_invoice_iae(pdf.pages)
-            if type_invoice == 'stand_aero':
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.STAND_AERO.value:
                 classifier_invoice_stand_aero(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.AMECO_3.value:
                 classifier_invoice_ameco_3(pdf.pages)
