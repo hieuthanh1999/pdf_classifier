@@ -16,4 +16,6 @@ class Code(Enum):
     WILLS = 'wills'
     PW = 'pw'   
     WLFC = 'wlfc'
-    EPCOR = 'epcor' 
+    EPCOR = 'epcor'
+    SMBC = 'smbc' 
+    KLM = 'klm' 
