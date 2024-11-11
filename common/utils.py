@@ -135,3 +135,5 @@ def time_execution(func):
         logger.info(f"Thời gian thực thi của hàm '{func.__name__}': {execution_time:.4f} s")
         return result
     return wrapper
+def remove_duplicate_characters(description):
+    return re.sub(r'(.)\1', r'\1', description)

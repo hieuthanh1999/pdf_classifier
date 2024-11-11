@@ -6,7 +6,7 @@ from .invoice_ameco import classifier_invoice_ameco, classifier_invoice_lc_ameco
 from .invoice_celestial import classifier_invoice_celestial
 from .invoice_iae import classifier_invoice_iae
 from .invoice_stand_aero import classifier_invoice_stand_aero
-from .invoice_epcor import classifier_invoice_invoice_epcor
+from .invoice_epcor import classifier_invoice_epcor, classifier_invoice_epcor_2
 from .invoice_mtu import classifier_lc_mtu_invoice
 from .invoice_pw import classifier_invoice_pw
 from .invoice_wills import classifier_invoice_wills

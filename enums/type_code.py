@@ -19,3 +19,5 @@ class Code(Enum):
     EPCOR = 'epcor'
     SMBC = 'smbc' 
     KLM = 'klm' 
+    EPCOR_2 = 'epcor_2'
+    STAND_AERO = 'stand_aero'
