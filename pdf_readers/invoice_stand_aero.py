@@ -103,7 +103,8 @@ def classifier_invoice_stand_aero(pages):
                             match = re.search(regex_replacements_parts_discount, text[i+1])
                             if match:
                                 list_table_description[service_name + 'Actual'] = to_float(match.group(4))
-                                list_table_description[match.group(1)] = to_float(match.group(2))
+                                print(match.group(2))
+                                list_table_description[match.group(1)] = to_float(match.group(2).replace('%', ''))
                                 list_table_description[service_name + 'Minus'] = to_float(match.group(3))    
                 if 'ROTABLE / SPECIAL PROCESS' in line_row:
                     rotable_special_process = True
