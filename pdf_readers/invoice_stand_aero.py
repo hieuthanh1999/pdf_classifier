@@ -103,7 +103,6 @@ def classifier_invoice_stand_aero(pages):
                             match = re.search(regex_replacements_parts_discount, text[i+1])
                             if match:
                                 list_table_description[service_name + 'Actual'] = to_float(match.group(4))
-                                print(match.group(2))
                                 list_table_description[match.group(1)] = to_float(match.group(2).replace('%', ''))
                                 list_table_description[service_name + 'Minus'] = to_float(match.group(3))    
                 if 'ROTABLE / SPECIAL PROCESS' in line_row:
@@ -239,13 +238,10 @@ def classifier_invoice_stand_aero(pages):
                             csp['csp_no'] = line_row.split('#')[1].replace(' ', '')
                         if extracting:
                             if 'TOTAL CAMPAIGN' in line_row:
-                                print('csp')
                                 extracting = False
                                 pwc_commercial_support_data.append(csp)
                                 csp['total_campaign'] = extract_value(line_row, '')
                                 csp['table'] = list_table_csp
-                               
-                                print(list_table_csp)
                             else:
                                 match = re.search(r"PART# PART DESCRIPTION QTY LIST (\w+) TOTAL", line_row)
                                 if match:
@@ -254,10 +250,8 @@ def classifier_invoice_stand_aero(pages):
                                     match = re.search(regex_pwc, line_row)
                                     if match:
                                         csp_detail = Details()
-                                        print(match.groups())
                                         csp_detail.part_number = match.group(1)
                                         csp_detail.description = match.group(2)
-                                        print(match.group(2))
                                         csp_detail.quantity = to_int(match.group(3))
                                         csp_detail.list = to_float(match.group(4))
                                         csp_detail.total_type = to_float(match.group(5))
