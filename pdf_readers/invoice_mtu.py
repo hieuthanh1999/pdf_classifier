@@ -25,7 +25,8 @@ def classifier_lc_mtu_invoice(pages):
             text = page.extract_text().split('\n')
             for i, line_row in enumerate(text):
                 logger.info("%s", line_row)
-        write_json_to_file(page_data)
+        # write_json_to_file(page_data)
+        print(json.dumps(page_data, indent=4))
         #print(invoice.to_string())           
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))

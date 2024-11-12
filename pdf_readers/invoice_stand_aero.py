@@ -205,7 +205,8 @@ def classifier_invoice_stand_aero(pages):
         page_data['serviceable_parts'] = list_serviceable_parts
         page_data['serviceable_lcf_parts'] = list_serviceable_lcf_parts
         page_data['specially_priced_serviceable_parts'] = list_specially_priced_serviceable_parts
-        write_json_to_file(page_data)
+        # write_json_to_file(page_data)
+        print(json.dumps(page_data, indent=4))
         #print(page_data)       
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
