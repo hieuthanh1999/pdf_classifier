@@ -160,7 +160,7 @@ def classifier_invoice_stand_aero(pages):
                                 model.discount_percent = to_float(match.group(2).replace('%', ''))
                                 model.discount_description = match.group(1)
                                 model.total = to_float(match.group(3))
-                
+                            list_table_new_lcf_parts.append(model.to_dict())
                 if 'SERVICEABLE PARTS' in line_row:
                     serviceable_parts = True
                 if serviceable_parts:
@@ -267,9 +267,12 @@ def classifier_invoice_stand_aero(pages):
         page_data['description'] = list_table_description   
         page_data['rotable_special_process'] = list_table_rotable_special_process
         page_data['new_parts'] = list_table_new_parts
+        page_data['new_lcf_parts'] = list_table_new_lcf_parts
         page_data['serviceable_parts'] = list_serviceable_parts
         page_data['serviceable_lcf_parts'] = list_serviceable_lcf_parts
         page_data['specially_priced_serviceable_parts'] = list_specially_priced_serviceable_parts
+        page_data['components_repair'] = list_table_components_repair
+        page_data['pwc_commercial_support'] = pwc_commercial_support_data
 
         # write_json_to_file(page_data)
         print(json.dumps(page_data, indent=4))
