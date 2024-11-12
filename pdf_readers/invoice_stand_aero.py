@@ -26,6 +26,10 @@ def classifier_invoice_stand_aero(pages):
         list_serviceable_lcf_parts = []
         list_specially_priced_serviceable_parts = []
         list_table_components_repair = []
+        pwc_commercial_support_data = []
+        extracting = False
+        list_table_csp = []
+        pwc_commercial_support = False
         replacement_parts = False
         rotable_special_process = False
         first_replacement_parts = False
@@ -37,7 +41,9 @@ def classifier_invoice_stand_aero(pages):
         serviceable_lcf_parts = False
         components_repair = False
         key = keyword(stand_aero)
+        regex_componet_repair = r'(\S*)\s*([A-Za-z0-9\s#.,\-/()]+)\s*(\d*)\s+(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)'
         regex_new_parts = r'(\S+)\s+([A-Za-z0-9\s,#./()%]+)\s+(\d+)\s+(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s+(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)'
+        regex_pwc = r'(\S+)\s+([A-Za-z0-9\s,#./()%]+)\s+(\d+)\s+(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s+(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s+(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)'
         regex_rotable_special_process = r'(\S+)\s+([A-Za-z0-9\s,#/().]*)\s+(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s+([\d-]+)'
         regex_replacements_parts = r'^(?!Less:)([A-Za-z\s]+)\s+(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)'
         regex_replacements_parts_discount = r'Less:\s*([A-Za-z\s]+)\s+(\d{1,3}(?:\.\d+)?%)\s+\(\s*(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\)\s+(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)'
@@ -75,7 +81,6 @@ def classifier_invoice_stand_aero(pages):
                     if match:
                         page_data[key.invoice_number] = match.group(1)
                 if key.date in line_row:
-                    print(list_table_description)
                     line_row = line_row.replace(' ', '')
                     match = re.search(r'Date:\s*(\d{4}-[A-Za-z]{3}-\d{2})', line_row)
                     if match:
@@ -110,7 +115,6 @@ def classifier_invoice_stand_aero(pages):
                         #print(line_row)
                         match = re.search(regex_rotable_special_process, line_row)
                         if match:
-                            print(match.groups())
                             model = Details()
                             model.part_number = match.group(1)
                             model.description = match.group(2)
@@ -140,6 +144,8 @@ def classifier_invoice_stand_aero(pages):
                         new_lcf_parts = False
                         page_data['total_new_lcf_parts'] = extract_value(line_row, '')
                     else:
+                        #print(line_row)
+
                         match = re.search(regex_new_parts, line_row)
                         if match:
                             model = Details()
@@ -149,6 +155,12 @@ def classifier_invoice_stand_aero(pages):
                             model.list = to_float(match.group(4))
                             model.total = to_float(match.group(5))
                             list_table_new_lcf_parts.append(model.to_dict())
+                            match = re.search(r'([A-Za-z\s]+)\s+(\d{1,3}(?:\.\d+)?%)\s+-\s+(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)', text[i+1])
+                            if match:
+                                model.discount_percent = to_float(match.group(2).replace('%', ''))
+                                model.discount_description = match.group(1)
+                                model.total = to_float(match.group(3))
+                
                 if 'SERVICEABLE PARTS' in line_row:
                     serviceable_parts = True
                 if serviceable_parts:
@@ -197,6 +209,59 @@ def classifier_invoice_stand_aero(pages):
                             model.list = to_float(match.group(4))
                             model.total = to_float(match.group(5))
                             list_specially_priced_serviceable_parts.append(model.to_dict())
+                if 'COMPONENT REPAIR' in line_row:
+                    components_repair = True
+                if components_repair:
+                    if 'TOTAL COMPONENT REPAIR' in line_row:
+                        components_repair = False
+                        page_data['total_components_repair'] = extract_value(line_row, '')
+                    else:
+                        match = re.search(regex_componet_repair, line_row)
+                        if match:
+                            model = Details()
+                            model.part_number = match.group(1)
+                            model.description = match.group(2)
+                            model.quantity = to_float(match.group(3))
+                            model.total = to_float(match.group(4))
+                            list_table_components_repair.append(model.to_dict())
+                if 'PARTS WITH PRATT & WHITNEY COMMERCIAL SUPPORT PROGRAMS' in line_row:
+                    pwc_commercial_support = True
+                if pwc_commercial_support:
+                    if 'TOTAL PARTS WITH PRATT & WHITNEY COMMERCIAL SUPPORT' in line_row:
+                        pwc_commercial_support = False
+                        page_data['total_pwc_commercial_support'] = extract_value(line_row, '')
+                    else:
+                        if 'CSP' in line_row:
+                            csp = {}
+                            list_table_csp = []
+                            extracting = True
+                            csp['csp_no'] = line_row.split('#')[1].replace(' ', '')
+                        if extracting:
+                            if 'TOTAL CAMPAIGN' in line_row:
+                                print('csp')
+                                extracting = False
+                                pwc_commercial_support_data.append(csp)
+                                csp['total_campaign'] = extract_value(line_row, '')
+                                csp['table'] = list_table_csp
+                               
+                                print(list_table_csp)
+                            else:
+                                match = re.search(r"PART# PART DESCRIPTION QTY LIST (\w+) TOTAL", line_row)
+                                if match:
+                                    csp['type'] = match.group(1)
+                                else:
+                                    match = re.search(regex_pwc, line_row)
+                                    if match:
+                                        csp_detail = Details()
+                                        print(match.groups())
+                                        csp_detail.part_number = match.group(1)
+                                        csp_detail.description = match.group(2)
+                                        print(match.group(2))
+                                        csp_detail.quantity = to_int(match.group(3))
+                                        csp_detail.list = to_float(match.group(4))
+                                        csp_detail.total_type = to_float(match.group(5))
+                                        csp_detail.total = to_float(match.group(6))
+                                        list_table_csp.append(csp_detail.to_dict())
                 #print(line_row)
                 logger.info("%s", line_row)
         page_data['description'] = list_table_description   
@@ -205,6 +270,7 @@ def classifier_invoice_stand_aero(pages):
         page_data['serviceable_parts'] = list_serviceable_parts
         page_data['serviceable_lcf_parts'] = list_serviceable_lcf_parts
         page_data['specially_priced_serviceable_parts'] = list_specially_priced_serviceable_parts
+        page_data['pwc_commercial_support'] = pwc_commercial_support_data
         write_json_to_file(page_data)
         #print(page_data)       
     except Exception as e:
