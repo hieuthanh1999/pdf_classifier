@@ -76,6 +76,8 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_klm(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.EPCOR_2.value:
                 classifier_invoice_epcor_2(pdf.pages)
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.LUFTHANSA.value:
+                classifier_invoice_lufthansa(pdf.pages)
         pdf.close()
     except IOError as e:
         print({"error": "Không thể mở tập tin " + str(e)})
