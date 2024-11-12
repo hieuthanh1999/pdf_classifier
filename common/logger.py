@@ -18,7 +18,7 @@ logging.basicConfig(
     level=logging.INFO,  # Mức độ ghi log (INFO, DEBUG, WARNING, ERROR, CRITICAL)
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(log_file),
+        logging.FileHandler(log_file, encoding="utf-8"),
     ]
 )
 

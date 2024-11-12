@@ -6,3 +6,5 @@ python main.py invoice  iae /Users/hieuthanh/Desktop/OCR/pdf/invoice_iae.pdf
 python main.py invoice wills  /Users/hieuthanh/Desktop/OCR/pdf/28.Invoice-Wills.pdf  
 python main.py invoice  pw /Users/hieuthanh/Desktop/OCR/pdf/21.Invoice_PW.PDF
 python main.py invoice  wlfc /Users/hieuthanh/Desktop/OCR/pdf/31.Invoice-WLFC-deposit.pdf
+python main.py invoice smbc pdf/27.Invoice_SMBC.pdf
+python main.py invoice klm pdf/8.Invoice_KLM.pdf 

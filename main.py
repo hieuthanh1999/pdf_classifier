@@ -70,6 +70,10 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_ameco_3(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.EPCOR.value:
                 classifier_invoice_epcor(pdf.pages)
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.SMBC.value:
+                classifier_invoice_smbc(pdf.pages)
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.KLM.value:
+                classifier_invoice_klm(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.EPCOR_2.value:
                 classifier_invoice_epcor_2(pdf.pages)
         pdf.close()

@@ -101,7 +101,8 @@ def classifier_invoice_epcor(pages):
                         list_table.append(detail.to_dict())
             page_data['table'] = list_table
 
-        write_json_to_file(page_data)    
+        # write_json_to_file(page_data)    
+        print(json.dumps(page_data, indent=4))
     except Exception as e:
         print(f"Error: {e}")
         return None
@@ -214,7 +215,8 @@ def classifier_invoice_epcor_2(pages):
             page_data['table_power_section'] = list_table_power_section
             page_data['table_gearbox'] = list_table_gearbox
             page_data['table_nte_exclusions'] = list_table_nte_exclusions
-        write_json_to_file(page_data)    
+        # write_json_to_file(page_data)   
+        print(json.dumps(page_data, indent=4)) 
     except Exception as e:
         print(f"Error: {e}")
         return None

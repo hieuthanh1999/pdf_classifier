@@ -11,5 +11,7 @@ from .invoice_mtu import classifier_lc_mtu_invoice
 from .invoice_pw import classifier_invoice_pw
 from .invoice_wills import classifier_invoice_wills
 from .invoice_wlfc import classifier_invoice_wlfc
+from .invoice_smbc import classifier_invoice_smbc
+from .invoice_klm import classifier_invoice_klm
 
 

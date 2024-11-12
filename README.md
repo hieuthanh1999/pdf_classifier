@@ -76,6 +76,10 @@ You need to add the following line to your `~/.bash_profile` or `~/.bashrc` or `
 # Hướng dẫn chạy:
 ## cd đường dẫn thư mục pdf_classifier run:
 ```bash
+> pip install -r requirements.txt
+```
+## cd đường dẫn thư mục pdf_classifier run:
+```bash
 > python/python3/python3.9  main.py <type> <code> <path>
 ```
 ## ví dụ: 

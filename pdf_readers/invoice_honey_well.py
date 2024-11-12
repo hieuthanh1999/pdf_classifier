@@ -151,11 +151,12 @@ def classifier_honey_well_invoice(pages):
         page_data['repair_or_overhaul_parts'] = list_table_repair_or_overhaul_parts
         page_data['over_and_above_nor_parts'] = list_table_over_and_above_nor_parts
         page_data['over_and_above_roo_parts'] = list_table_over_and_above_roo_parts
-        write_json_to_file(page_data)
-        #print(json.dumps(page_data, indent=4))     
+        # write_json_to_file(page_data)
+        print(json.dumps(page_data, indent=4))     
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None
+    
 @time_execution
 def put_data_to_table_roo(match):
     try:

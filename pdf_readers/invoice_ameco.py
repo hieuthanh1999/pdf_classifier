@@ -289,8 +289,9 @@ def classifier_invoice_ameco_3(pages):
         page_data['lru_total'] = lru_total
         page_data['table_llp'] = list_table_llp
         page_data['llp_total'] = llp_total
-        write_json_to_file(page_data)
+        # write_json_to_file(page_data)
+        print(json.dumps(page_data, indent=4))
 
     except Exception as e:
-        logger.error("Error invoice credit: %s", str(e))
+        # logger.error("Error invoice credit: %s", str(e))
         return None

@@ -48,7 +48,8 @@ def classifier_invoice_credit_rolls_royce(pages):
                
 
         page_data['table'] = list_table
-        write_json_to_file(page_data)
+        print(json.dumps(page_data, indent=4))
+        # write_json_to_file(page_data)
 
     except Exception as e:
         print(f"Error: {e}")
