@@ -39,7 +39,6 @@ def classifier_invoice_ameco(pages):
         dict_total = {}
         list_table = []
         extracting = False
-        charges = []
         total_amount = None
         key = keyword(rolls_royce)
         for p_idx, page in enumerate(pages):
@@ -51,7 +50,7 @@ def classifier_invoice_ameco(pages):
                     extracting = True
                     continue
                 if 'Total amount' in line_row:
-                    #logger.info("%s", line_row)
+                    logger.info("%s", line_row)
                     extracting = False
                     total_pattern = r'Total amount[:\uFF1A]?\s([\d,]+\.\d{2})\s(USD|EUR|GBP|JPY|CNY)'
 
@@ -85,7 +84,6 @@ def classifier_invoice_ameco(pages):
                             list_table.append(model.to_dict())
         page_data['description'] = list_table
         write_json_to_file(page_data)
-        #print(invoice.to_string())           
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None
@@ -111,6 +109,7 @@ def classifier_invoice_ameco_3(pages):
         llp_list = False
         
         for p_idx, page in enumerate(pages):
+            
             text = page.extract_text().split('\n')
             for i, line in enumerate(text):
                 """Extracting data from Replacable Parts List"""
@@ -135,16 +134,16 @@ def classifier_invoice_ameco_3(pages):
                             pattern = r"(\d+)\s+([\w-]+)\s+([A-Za-z0-9\s,/-]+?)\s+(\d+)\s+(\w+)\s*\$?\s*([\d,]+\.\d{2})\s*\$?\s*([\d,]+\.\d{2})\s*\$?\s*([\d,]+\.\d{2})\s*\$?\s*([\d,]+\.\d{2})?\s+([A-Za-z\s]+)?"
                             match = re.search(pattern, line)
                             if match:
-                                model = Details("")
-                                model.item = match.group(1)
+                                model = Details()
+                                model.item = to_int(match.group(1))
                                 model.part_number = match.group(2)
                                 model.description = match.group(3)
-                                model.quantity = match.group(4)
+                                model.quantity = to_int(match.group(4))
                                 model.unit = match.group(5)
-                                model.clp = match.group(6)
-                                model.unit_price = match.group(7)
-                                model.total_price = match.group(8)
-                                model.handling = match.group(9)
+                                model.clp = to_float(match.group(6)) if match.group(6) not in [None, ''] else 0
+                                model.unit_price = to_float(match.group(7))
+                                model.total_price = to_float(match.group(8))
+                                model.handling = to_float(match.group(9)) if match.group(9) not in [None, ''] else 0
                                 model.remark = match.group(10)
                                 list_table_rpl.append(model.to_dict())
                 """
@@ -171,15 +170,16 @@ def classifier_invoice_ameco_3(pages):
                         pattern = r"(\d+)\s+(\d{7}-\d+)\s+([\w\s,/\-()]+)\s+(\d+)\s+(\w+)\s+(?:([\d,]+(?:\.\d+)?)|\/)\s+\$\s+([\d,]+(?:\.\d+)?)\s+\$\s+([\d,]+(?:\.\d+)?)\s+\$\s+([\d,]+(?:\.\d+)?)?\s*([\w\s]*)?"
                         match = re.search(pattern, line)
                         if match:
-                            model = Details("")
-                            model.item = match.group(1)
+                            model = Details()
+                            model.item = to_int(match.group(1))
                             model.part_number = match.group(2)
                             model.description = match.group(3)
-                            model.quantity = match.group(4)
-                            model.cunit = match.group(5)
-                            model.usdunit = match.group(6)
-                            model.total_price = match.group(8)
-                            model.subcontract_fees = match.group(9)
+                            model.quantity = to_int(match.group(4))
+                            model.unit = match.group(5)
+                            model.cunit = to_float(match.group(6)) if match.group(6) not in [None, ''] else 0
+                            model.usdunit = to_float(match.group(7))
+                            model.total_price = to_float(match.group(8))
+                            model.subcontract_fees = to_float(match.group(9)) if match.group(9) not in [None, ''] else 0
                             model.remarks = match.group(10)
                             list_table_crpl.append(model.to_dict())
                 """Extracting data from LRU List"""
@@ -212,15 +212,15 @@ def classifier_invoice_ameco_3(pages):
                         pattern = r'(\d+)\s+([A-Za-z0-9-]+)\s+(.+?)\s+(\d+)\s+(EA|SET)\s+\$\s+([\d,]+\.\d{2})\s+\$\s+([\d,]+\.\d{2})(?:\s+\$\s+([\d,]+\.\d{2}))?\s*(.+)?'
                         match = re.search(pattern, line)
                         if match:
-                            model = Details("")
-                            model.item = match.group(1)
+                            model = Details()
+                            model.item = to_int(match.group(1))
                             model.part_number = match.group(2)
                             model.description = match.group(3)
-                            model.quantity = match.group(4)
+                            model.quantity = to_int(match.group(4))
                             model.unit = match.group(5)
-                            model.usdunit = match.group(6)
-                            model.total_price = match.group(7)
-                            model.handling = match.group(8)
+                            model.usdunit = to_float(match.group(6))
+                            model.total_price = to_float(match.group(7))
+                            model.handling = to_float(match.group(8)) if match.group(8) not in [None, ''] else 0
                             model.remarks = match.group(9)
                             list_table_lru.append(model.to_dict()) 
                 """Extracting data from LLP List"""
@@ -242,19 +242,20 @@ def classifier_invoice_ameco_3(pages):
                         llp_total['total'] = total
                         llp_list = False
                     else:
-                        pattern = r"(\d+)\s+(\w+-\d+)\s+([\w\s,/\-()]+)\s+(\d+)\s+(\w+)\s+\$\s*([\d,]+(?:\.\d+)?)\s+\$\s*([\d,]+(?:\.\d+)?)\s*\$\s*([\d,]+(?:\.\d+)?)?\s*([\w\s]*)?"
+                        pattern = r"(\d+)\s+(\w+-\d+)\s+([\w\s,/\-()]+)\s+(\d+)\s+(\w+)\s+\$\s*([\d,]+(?:\.\d+)?)\s+\$\s*([\d,]+(?:\.\d+)?)\s+\$\s*([\d,]+(?:\.\d+)?)\s*\$\s*([\d,]+(?:\.\d+)?)?\s*([\w\s]*)?"
                         match = re.search(pattern, line)
                         if match:
-                            model = Details("")
-                            model.item = match.group(1)
+                            model = Details()
+                            model.item = to_int(match.group(1))
                             model.part_number = match.group(2)
                             model.description = match.group(3)
-                            model.quantity = match.group(4)
+                            model.quantity = to_int(match.group(4))
                             model.unit = match.group(5)
-                            model.unit_price = match.group(6)
-                            model.total_price = match.group(7)
-                            model.handling = match.group(8)
-                            model.remark = match.group(9)
+                            model.clp = to_float(match.group(6)) if match.group(6) not in [None, ''] else 0
+                            model.usdunit = to_float(match.group(7))
+                            model.total_price = to_float(match.group(8))
+                            model.handling = to_float(match.group(9)) if match.group(9) not in [None, ''] else 0
+                            model.remark = match.group(10)
                             list_table_llp.append(model.to_dict())       
             tables = page.extract_tables()
             for table in tables:
@@ -277,9 +278,8 @@ def classifier_invoice_ameco_3(pages):
                                 cleaned_amount_value = to_float(amount_value[1:])
                                 data_row["Amount"] = cleaned_amount_value
                         if data_row["Items"] == '':
-                                page_data['total_items_price'] = data_row["Amount"]
+                            page_data['total_items_price'] = data_row["Amount"]
                         list_table_item.append(data_row)
-            # match = re.search()   
         page_data['table_items'] = list_table_item
         page_data['table_rpl'] = list_table_rpl
         page_data['rpl_total'] = rpl_total
@@ -293,5 +293,5 @@ def classifier_invoice_ameco_3(pages):
         print(json.dumps(page_data, indent=4))
 
     except Exception as e:
-        # logger.error("Error invoice credit: %s", str(e))
+        logger.error("Error invoice credit %s", str(e))
         return None
