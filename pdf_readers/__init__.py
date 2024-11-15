@@ -13,5 +13,6 @@ from .invoice_wills import classifier_invoice_wills
 from .invoice_wlfc import classifier_invoice_wlfc
 from .invoice_smbc import classifier_invoice_smbc
 from .invoice_klm import classifier_invoice_klm
+from .invoice_lufthansa import classifier_invoice_lufthansa
 
 

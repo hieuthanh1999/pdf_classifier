@@ -21,3 +21,4 @@ class Code(Enum):
     KLM = 'klm' 
     EPCOR_2 = 'epcor_2'
     STAND_AERO = 'stand_aero'
+    LUFTHANSA = 'lufthansa'
