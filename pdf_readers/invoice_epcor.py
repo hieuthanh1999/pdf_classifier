@@ -17,7 +17,7 @@ def classifier_invoice_epcor(pages):
     try:
         list_table = []
         page_data = {}
-        regex = r"([A-Za-z ]+)\s+([A-Za-z ]+)\s+(\d+\.\d{2})\s+(-?\d{1,3}(?:,\d{3})*\.\d{2})\s+(-?\d{1,3}(?:,\d{3})*\.\d{2})"
+        regex = r"([A-Za-z]+ [A-Za-z]+)\s+([A-Za-z ]+)\s+(\d+\.\d{2})\s+(-?\d{1,3}(?:,\d{3})*\.\d{2})\s+(-?\d{1,3}(?:,\d{3})*\.\d{2})"
         for p_idx, page in enumerate(pages):
             text = page.extract_text().split('\n')
             for i, line in enumerate(text):
@@ -87,7 +87,7 @@ def classifier_invoice_epcor(pages):
                         except:
                             detail.description = ''
                         try:
-                            detail.quantity =to_int(match.group(3).strip())
+                            detail.quantity =to_float(match.group(3).strip())
                         except:
                             detail.quantity = 0
                         try:
@@ -200,7 +200,6 @@ def classifier_invoice_epcor_2(pages):
                                     list_table_nte_exclusions.append(put_data(match))
                 if "NTE" in line:
                     if "NTE Correction" in line:
-
                         try:
                             nte_correction = to_float(to_string(line.split('$')[1].replace(' ', '')))
                             page_data['nte_correction'] = nte_correction
@@ -212,6 +211,18 @@ def classifier_invoice_epcor_2(pages):
                             page_data['nte'] = nte
                         except:
                             page_data['nte'] = 0
+                if 'Total Fixed Labor' in line:
+                    try:
+                        total_fixed_labor = to_float(to_string(line.split('$')[1].replace(' ', '')))
+                        page_data['total_fixed_labor'] = total_fixed_labor
+                    except:
+                        page_data['total_fixed_labor'] = 0
+                if 'Net amount' in line:
+                    try:
+                        net_amount = to_float(to_string(line.split('$')[1].replace(' ', '')))
+                        page_data['net_amount'] = net_amount
+                    except:
+                        page_data['net_amount'] = 0
             page_data['table_power_section'] = list_table_power_section
             page_data['table_gearbox'] = list_table_gearbox
             page_data['table_nte_exclusions'] = list_table_nte_exclusions
