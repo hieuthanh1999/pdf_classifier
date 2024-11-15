@@ -19,6 +19,8 @@ def classifier_invoice_lufthansa(pages):
         page_data = {}
         object_lv = {}
         object_root = {}
+        list_table_data = []
+        list_item = []
         material_consumption_total = ''
         fixed_price_total = ''
         labour_total = ''
@@ -54,8 +56,7 @@ def classifier_invoice_lufthansa(pages):
             #logger.info("%s", page)
             text = page.extract_text().split('\n')
             for i, line_row in enumerate(text):
-                # line_row = swap_comma_dot(line_row)
-                logger.info("%s", line_row)
+                # logger.info("%s", line_row)
                 if key.invoice_number in line_row and not invoice_no:
                     extract_sumary = True
                     match = re.search(r'Invoice\s+(\d+)', line_row)
@@ -66,11 +67,10 @@ def classifier_invoice_lufthansa(pages):
                     line_row = line_row.strip()
                     match = re.search(regex_sumary, line_row)
                     if match:
-                        print(match.groups(1))
                         model = Details()
                         model.description = match.group(2)
-                        model.amount = to_float(match.group(3))
-                        model.vat = to_float(match.group(4))
+                        model.amount = to_float(swap_comma_dot(match.group(3)))
+                        model.vat = to_float(swap_comma_dot(match.group(4)))
                         list_table_sumary.append(model.to_dict())
                 if key.net_amount in line_row:
                     extract_sumary = False
@@ -93,8 +93,8 @@ def classifier_invoice_lufthansa(pages):
                             model.description = match.group(1)
                             model.quantity = match.group(2)
                             model.unit = match.group(3)
-                            model.rate = to_float(match.group(4))
-                            model.amount = to_float(match.group(5))
+                            model.rate = to_float(swap_comma_dot(match.group(4)))
+                            model.amount = to_float(swap_comma_dot(match.group(5)))
                             list_table_partial_invoice_value.append(model.to_dict())
                 if key.miscellaneous in line_row:
                     sumary[key.miscellaneous] = extract_value(line_row, key.miscellaneous)
@@ -107,16 +107,16 @@ def classifier_invoice_lufthansa(pages):
                         if match:
                             model = Details()
                             model.description = match.group(1)
-                            model.amount = to_float(match.group(2))
+                            model.amount = to_float(swap_comma_dot(match.group(2)))
                             list_table_miscellaneous.append(model.to_dict())
                 match = re.search(r'\* (.+?)\s+([\d.,]+)', line_row)
                 name = ''
                 if match:
                     name = match.group(1).strip()
-                    print(match.group(2))
-                    total_tmp = to_float(match.group(2))
+                    total_tmp = to_float(swap_comma_dot(match.group(2)))
                 if name == key.fixed_price:
-                    fixed_price = True    
+                    fixed_price = True 
+                    fixed_price_total = total_tmp   
                 elif fixed_price:
                     match = re.search(regex_fixed_price, line_row)
                     if match:
@@ -124,8 +124,8 @@ def classifier_invoice_lufthansa(pages):
                         model.description = match.group(1)
                         model.quantity =to_int(match.group(2))
                         model.unit = match.group(3)
-                        model.unit_price = to_float(match.group(4))
-                        model.total_price = to_float(match.group(5))
+                        model.unit_price = to_float(swap_comma_dot(match.group(4)))
+                        model.total_price = to_float(swap_comma_dot(match.group(5)))
                         list_table_fixed_price.append(model.to_dict())
                     elif '*' in line_row:
                         fixed_price = False
@@ -141,17 +141,17 @@ def classifier_invoice_lufthansa(pages):
                         model.part_no = match.group(1)
                         model.description = match.group(2)
                         model.work_package = match.group(3)
-                        model.quantity = to_int(match.group(4)) 
+                        model.quantity = to_int(swap_comma_dot(match.group(4)) )
                         model.unit = match.group(5)
-                        model.unit_price = to_float(match.group(6))
-                        model.total_price = to_float(match.group(7))
+                        model.unit_price = to_float(swap_comma_dot(match.group(6)))
+                        model.total_price = to_float(swap_comma_dot(match.group(7)))
                         list_table_fixed_price_parts_repair.append(model.to_dict())
                     elif '*' in line_row:
                         fixed_price_parts_repair = False
                         
                 if name == key.material_consumption:
                     material_consumption = True
-                    # material_consumption_total = to_float(total_tmp)
+                    material_consumption_total = total_tmp
                 elif material_consumption:
                     match = re.search(regex_material_consumption, line_row)
                     if match:
@@ -160,17 +160,17 @@ def classifier_invoice_lufthansa(pages):
                         model.description = match.group(2)
                         model.quantity = to_int(match.group(3))
                         model.unit = match.group(4)
-                        model.unit_price = to_float(match.group(5))
-                        model.amount = to_float(match.group(6))
-                        model.handling_percent = to_float(match.group(7))
-                        model.handling_amount = to_float(match.group(8))
-                        model.total_amount = to_float(match.group(9))
+                        model.unit_price = to_float(swap_comma_dot(match.group(5)))
+                        model.amount = to_float(swap_comma_dot(match.group(6)))
+                        model.handling_percent = to_float(swap_comma_dot(match.group(7)))
+                        model.handling_amount = to_float(swap_comma_dot(match.group(8)))
+                        model.total_amount = to_float(swap_comma_dot(match.group(9)))
                         list_table_material_consumption.append(model.to_dict())
                     elif '*' in line_row:
                         material_consumption = False
                 if name == key.labour:
                     labour = True
-                    # labour_total = to_float(total_tmp)
+                    labour_total = total_tmp
                 elif labour:
                     match = re.search(regex_labour, line_row)
                     if match:
@@ -178,8 +178,8 @@ def classifier_invoice_lufthansa(pages):
                         model.description = match.group(1)
                         model.quantity = to_int(match.group(2))
                         model.unit = match.group(3)
-                        model.rate = to_float(match.group(4))
-                        model.amount = to_float(match.group(5))
+                        model.rate = to_float(swap_comma_dot(match.group(4)))
+                        model.amount = to_float(swap_comma_dot(match.group(5)))
                         list_table_labour.append(model.to_dict())
                     elif '*' in line_row:
                         labour = False
@@ -192,53 +192,80 @@ def classifier_invoice_lufthansa(pages):
                     object_root['material_consumption_total'] = material_consumption_total
                     object_root['labour_total'] = labour_total
                     object_root['fixed_price_parts_repair_total'] = fixed_price_parts_repair_total
+                    list_table_data.append(object_root)
                     have_sub = False
                     object_root = {}
                     list_table_fixed_price = []
                     list_table_material_consumption = []
                     list_table_labour = []
                     list_table_fixed_price_parts_repair = []
+                    fixed_price_total = ''
+                    material_consumption_total = ''
+                    labour_total = ''
+                    fixed_price_parts_repair_total = ''
                     match = re.search(r'\* ([^,]+)\s+([\d.,]+)', line_row)
                     if match:
                         object_root['name'] = match.group(1).strip()
-                        object_root['amount'] = to_float(match.group(2))
+                        object_root['amount'] = to_float(swap_comma_dot(match.group(2)))
                     if text[i+1].count('*') == 2 and text[i+2].count('*') == 3:  
                         have_sub = True
                         object_lv = {}
                         object_lv['name'] = re.search(r'\* (.+?)\s+([\d.,]+)',text[i + 1] ).group(1).strip()
                         object_lv['amount'] = to_float(re.search(r'([\d.,]+)',text[i + 1] ).group(1))
-                    page_data[object_root['name']] = object_root
+                    # page_data[object_root['name']] = object_root
                 if line_row.count('*') == 2 and have_sub:
                     object_lv['labour'] = list_table_labour
                     object_lv['fixed_price'] = list_table_fixed_price
                     object_lv['material_consumption'] = list_table_material_consumption
                     object_lv['fixed_price_parts_repair'] = list_table_fixed_price_parts_repair
-                    object_root[object_lv['name']] = object_lv
+                    object_lv['fixed_price_total'] = fixed_price_total
+                    object_lv['material_consumption_total'] = material_consumption_total
+                    object_lv['labour_total'] = labour_total
+                    object_lv['fixed_price_parts_repair_total'] = fixed_price_parts_repair_total
+                    list_item.append(object_lv)
+                    # object_root[object_lv['name']] = object_lv
                     object_lv = {}
                     match = re.search(r'\* (.+?)\s+([\d.,]+)',line_row )
                     if match:
                         object_lv['name'] = match.group(1).strip()
-                        object_lv['amount'] = to_float(match.group(2))
+                        object_lv['amount'] = to_float(swap_comma_dot(match.group(2)))
                     else:
                         pass
                     list_table_fixed_price = []
                     list_table_material_consumption = []
                     list_table_labour = []
                     list_table_fixed_price_parts_repair = []
-                    page_data[object_root['name']] = object_root
+                    fixed_price_total = ''
+                    material_consumption_total = ''
+                    labour_total = ''
+                    fixed_price_parts_repair_total = ''
+                    # page_data[object_root['name']] = object_root
                 if i == len(text) - 1 and p_idx == len(pages) - 1:
                     if have_sub:
                         object_lv['fixed_price'] = list_table_fixed_price
                         object_lv['material_consumption'] = list_table_material_consumption
                         object_lv['labour'] = list_table_labour
                         object_lv['fixed_price_parts_repair'] = list_table_fixed_price_parts_repair
-                        object_root[object_lv['name']] = object_lv
+                        object_lv['fixed_price_total'] = fixed_price_total
+                        object_lv['material_consumption_total'] = material_consumption_total
+                        object_lv['labour_total'] = labour_total
+                        object_lv['fixed_price_parts_repair_total'] = fixed_price_parts_repair_total
+                        # object_root[object_lv['name']] = object_lv
+                        list_item.append(object_lv)
+                        list_item.pop(0)
+                        object_root['items'] = list_item
+
                     else:
                         object_root['fixed_price'] = list_table_fixed_price
                         object_root['material_consumption'] = list_table_material_consumption
                         object_root['labour'] = list_table_labour
                         object_root['fixed_price_parts_repair'] = list_table_fixed_price_parts_repair
-                    page_data[object_root['name']] = object_root
+                        object_root['fixed_price_total'] = fixed_price_total
+                        object_root['material_consumption_total'] = material_consumption_total
+                        object_root['labour_total'] = labour_total
+                    list_table_data.pop(0)
+                    list_table_data.append(object_root)
+                    page_data['data'] = list_table_data
         page_data['sumary'] = sumary
         page_data['partial_invoice_value'] = list_table_partial_invoice_value
         page_data['miscellaneous'] = list_table_miscellaneous
@@ -261,6 +288,7 @@ def classifier_invoice_lufthansa(pages):
 def extract_value(line_row, key):
     try:
         line_row = line_row.replace(' ', '')
+        line_row = swap_comma_dot(line_row)
         return float(re.findall(r'-?\d{1,3}(?:,\d{3})*(?:\.\d+)?', line_row)[0].replace(',', ''))
     except IndexError:
         return 0
