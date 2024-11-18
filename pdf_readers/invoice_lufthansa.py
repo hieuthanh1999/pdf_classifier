@@ -43,6 +43,7 @@ def classifier_invoice_lufthansa(pages):
         extract_sumary = False
         fixed_price_parts_repair = False
         list_table_fixed_price_parts_repair = []
+        pattern_discount = r"^(.*?)(\s+-?\d{1,3}(?:\.\d{3})*,\d{2})$"
         regex_sumary = regex_sumary = r"(\d*)?\s*([\w\s,./()-]+)\s+(-?\d{1,3}(?:\.\d{3})*,\d{2})\s+\((\d+|\d{1,3}(?:\.\d{3})*,\d{2})\)"
         regex_partial_invoice_value = r'(.+?)\s+(\d+)\s+(\w+)\s+([\d.,-]+)\s+([\d.,-]+)\s+([\d.,-]+)'
         regex_fixed_price = r'^(.*?)\s+(\d+)\s+(\w+)\s+([\d.,]+)\s+([\d.,]+)$'
@@ -56,7 +57,7 @@ def classifier_invoice_lufthansa(pages):
             #logger.info("%s", page)
             text = page.extract_text().split('\n')
             for i, line_row in enumerate(text):
-                # logger.info("%s", line_row)
+                logger.info("%s", line_row)
                 if key.invoice_number in line_row and not invoice_no:
                     extract_sumary = True
                     match = re.search(r'Invoice\s+(\d+)', line_row)
@@ -126,6 +127,11 @@ def classifier_invoice_lufthansa(pages):
                         model.unit = match.group(3)
                         model.unit_price = to_float(swap_comma_dot(match.group(4)))
                         model.total_price = to_float(swap_comma_dot(match.group(5)))
+                        if 'Discount' in text[i+1]:
+                            match = re.search(pattern_discount, text[i+1])
+                            if match:
+                                model.discount_description = match.group(1)
+                                model.discount = match.group(2)
                         list_table_fixed_price.append(model.to_dict())
                     elif '*' in line_row:
                         fixed_price = False
@@ -145,6 +151,11 @@ def classifier_invoice_lufthansa(pages):
                         model.unit = match.group(5)
                         model.unit_price = to_float(swap_comma_dot(match.group(6)))
                         model.total_price = to_float(swap_comma_dot(match.group(7)))
+                        if 'Discount' in text[i+1]:
+                            match = re.search(pattern_discount, text[i+1])
+                            if match:
+                                model.discount_description = match.group(1)
+                                model.discount = match.group(2)
                         list_table_fixed_price_parts_repair.append(model.to_dict())
                     elif '*' in line_row:
                         fixed_price_parts_repair = False
@@ -165,6 +176,11 @@ def classifier_invoice_lufthansa(pages):
                         model.handling_percent = to_float(swap_comma_dot(match.group(7)))
                         model.handling_amount = to_float(swap_comma_dot(match.group(8)))
                         model.total_amount = to_float(swap_comma_dot(match.group(9)))
+                        if 'Discount' in text[i+1]:
+                            match = re.search(pattern_discount, text[i+1])
+                            if match:
+                                model.discount_description = match.group(1)
+                                model.discount = match.group(2)
                         list_table_material_consumption.append(model.to_dict())
                     elif '*' in line_row:
                         material_consumption = False
@@ -180,6 +196,11 @@ def classifier_invoice_lufthansa(pages):
                         model.unit = match.group(3)
                         model.rate = to_float(swap_comma_dot(match.group(4)))
                         model.amount = to_float(swap_comma_dot(match.group(5)))
+                        if 'Discount' in text[i+1]:
+                            match = re.search(pattern_discount, text[i+1])
+                            if match:
+                                model.discount_description = match.group(1)
+                                model.discount = match.group(2)
                         list_table_labour.append(model.to_dict())
                     elif '*' in line_row:
                         labour = False
@@ -270,8 +291,8 @@ def classifier_invoice_lufthansa(pages):
         page_data['partial_invoice_value'] = list_table_partial_invoice_value
         page_data['miscellaneous'] = list_table_miscellaneous
         
-        write_json_to_file(page_data)
-        #print(json.dumps(page_data, indent=4))
+        # write_json_to_file(page_data)
+        print(json.dumps(page_data, indent=4))
         #print(invoice.to_string())
     except Exception as e:
         logger.error("Error invoice credit: %s", traceback.format_exc())
