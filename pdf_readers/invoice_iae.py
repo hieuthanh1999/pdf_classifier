@@ -78,6 +78,7 @@ def classifier_invoice_iae_2(pages):
         extract_total_oac = False
         extract_sumary = True
         pattern_oac_total = re.compile(r'(\w+)\s+\$([\d,]+\.\d{2})')
+        pattern_oac_sumary = r'^(\d+)\s+(\d+)\s+\$([\d,]+\.\d{2})\s+\$([\d,]+\.\d{2})\s+\(?\$([\d,]+\.\d{2})\)?\s+([\d.]+%)\s+\$([\d,]+\.\d{2})\s+([\d.]+%)\s+\$([\d,]+\.\d{2})\s+\$([\d,]+\.\d{2})$'
         pattern = re.compile(
             r'(?P<description>\S+)\s+(?P<condition>\S+)\s+(?P<qty_uom>\d+\.\d{3}\w{2})\s+\$(?P<unit_price>[\d,]+\.\d{2})\s+\$(?P<net_price>[\d,]+\.\d{2})'
         )
@@ -121,8 +122,12 @@ def classifier_invoice_iae_2(pages):
                             total_amount_due = to_float(line.split('$')[1])
                 if 'Over & Above Charges' in line:
                     oac = True
-                if 'Type' in line and 'O&A Total' in line:
+                if re.compile(r"Type O&A Total").search(line):
                     extract_total_oac = True
+                if 'Invoice Total' in line:
+                        extract_total_oac = False
+                        page_data['invoice_total'] = to_float(line.split('$')[1])
+                        page_data['total_oac'] = total_oac
                 if extract_total_oac:
                     match_oac_total = pattern_oac_total.search(line)
                     if match_oac_total:
@@ -130,14 +135,8 @@ def classifier_invoice_iae_2(pages):
                         model.type = match_oac_total.group(1)
                         model.total = to_float(match_oac_total.group(2))
                         total_oac.append(model.to_dict())
-                    if 'Invoice Total' in line:
-                        extract_total_oac = False
-                        match = total_pattern.search(line)
-                        if match:
-                            total_amount_due = match.group('total_amount')
-                            page_data['invoice_total'] = total_amount_due
+                    
                 if oac:
-                    # print(line)
                     match_oac = pattern_oac.search(line)
                     if match_oac:
                         
@@ -156,12 +155,28 @@ def classifier_invoice_iae_2(pages):
                         model.adjustment = to_float(match_oac.group(12).replace('%', ''))
                         model.handling_fee = to_float(match_oac.group(13).replace('%', ''))
                         model.iae_handling_fee = to_float(match_oac.group(14))
-                        model.discount = to_float(match_oac.group(15).replace('%', ''))
-                        model.source = match_oac.group(16)
-                        model.material_type = match_oac.group(17)
-                        model.exess_work_reason = match_oac.group(18)
-
+                        model.discount_percent = to_float(match_oac.group(15).replace('%', ''))
+                        model.discount_amount = to_float(match_oac.group(16))
+                        model.oaa_total = to_float(match_oac.group(17)) 
+                        model.source = match_oac.group(18)
+                        model.material_type = match_oac.group(19)
+                        model.exess_work_reason = match_oac.group(20)
                         list_table_oac.append(model.to_dict())
+                    else:
+                        match_oac = re.compile(pattern_oac_sumary).search(line)
+                        if match_oac:
+                            model = Details()
+                            model.quantity = to_int(match_oac.group(1))
+                            model.hours = to_int(match_oac.group(2))
+                            model.unit_price = to_float(match_oac.group(3))
+                            model.sub_total = to_float(match_oac.group(4))
+                            model.adjustment = to_float(match_oac.group(5))
+                            model.handling_fee = to_float(match_oac.group(6))
+                            model.iae_handling_fee = to_float(match_oac.group(7))
+                            model.discount_percent = to_float(match_oac.group(8))
+                            model.discount_amount = to_float(match_oac.group(9))
+                            model.oaa_total = to_float(match_oac.group(10))
+                            page_data['oac_summary'] = model.to_dict()
                     if 'Invoice Total' in line:
                         oac = False
                 if 'Part Information' in line and 'Removal Information' in line:
@@ -169,12 +184,8 @@ def classifier_invoice_iae_2(pages):
                 if last_table:
                     
                     match_last_table = pattern_last_table.search(line)
-                    # print(line)
                     if match_last_table:
-                        # print(len(match_last_table.groups()))
-                        print(match_last_table.groups(1))
                         model =  Details()
-                        count += 1
                         model.lid = match_last_table.group(1)
                         model.description = match_last_table.group(2)
                         model.part_number = match_last_table.group(3)
@@ -202,12 +213,11 @@ def classifier_invoice_iae_2(pages):
                         model.net_payment = to_float(match_last_table.group(15))
                         list_last_table.append(model.to_dict())
                     pass
-        print(count)      
         page_data['pw1133g'] = list_last_table
         page_data['over_above_charges'] = list_table_oac          
         page_data['table'] = list_table
-        write_json_to_file(page_data)
-        # print(json.dumps(page_data, indent=4))          
+        # write_json_to_file(page_data)
+        print(json.dumps(page_data, indent=4))          
 
         #print(invoice.to_string())           
     except Exception as e:
