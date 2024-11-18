@@ -5,6 +5,7 @@ class Code(Enum):
     Lớp Enum đại diện cho các mã hóa đơn khác nhau.
     """
     IAE = 'iae'
+    IAE_2 = 'iae_2'
     GE = 'ge'
     PRATT_WHITNEY_CANADA = 'pratt_whitney_canada'
     AMECO = 'ameco'
