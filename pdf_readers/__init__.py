@@ -4,7 +4,7 @@ from .invoice_honey_well import classifier_honey_well_invoice
 from .invoice_rolls_royce import classifier_invoice_rolls_royce,classifier_invoice_credit_rolls_royce
 from .invoice_ameco import classifier_invoice_ameco, classifier_invoice_lc_ameco, classifier_invoice_ameco_3
 from .invoice_celestial import classifier_invoice_celestial
-from .invoice_iae import classifier_invoice_iae
+from .invoice_iae import classifier_invoice_iae, classifier_invoice_iae_2
 from .invoice_stand_aero import classifier_invoice_stand_aero, classifier_credit_stand_aero
 from .invoice_epcor import classifier_invoice_epcor, classifier_invoice_epcor_2
 from .invoice_mtu import classifier_lc_mtu_invoice
