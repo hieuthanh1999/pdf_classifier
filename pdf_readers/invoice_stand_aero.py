@@ -13,6 +13,51 @@ from pdf_readers import *
 import pandas as pd
 from datetime import datetime
 
+@time_execution
+def classifier_credit_stand_aero(pages):
+    try:
+        page_data = {}
+        list_table = []
+        key = keyword(stand_aero)
+        extracting = True 
+        pattern = r"(.+?)\s*\$\s*\(?(-?\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\)?"
+        for p_idx, page in enumerate(pages):
+            text = page.extract_text().split('\n')
+            for i, line_row in enumerate(text):
+                line_row = line_row.strip()
+                # print(line_row)
+                if key.invoice_number in line_row:
+                    print(line_row)
+                    match = re.search(r'Invoice\s*#\s*:\s*([\w-]+)', line_row)
+                    if match:
+                        page_data[key.invoice_number] = match.group(1)
+                if key.date in line_row:
+                    line_row = line_row.replace(' ', '')
+                    match = re.search(r'Date:\s*(\d{4}-[A-Za-z]{3}-\d{2})', line_row)
+                    if match:
+                        date_value = match.group(1)
+                        page_data[key.date] = date_value
+                if key.sub_total in line_row:
+                    extracting = False
+                    page_data[key.sub_total] = extract_value(line_row, key.sub_total)
+                if extracting:
+                    match = re.search(pattern, line_row)
+                    if match:
+                        print(match.groups())
+                        model = Details()
+                        model.description = match.group(1)
+                        model.total = to_float(match.group(2))
+                        list_table.append(model.to_dict())
+                
+                if key.shipping in line_row:
+                    page_data[key.shipping] = extract_value(line_row, key.shipping)
+                if key.TOTAL in line_row and 'USD' in line_row:
+                    page_data[key.TOTAL] = extract_value(line_row, key.TOTAL)
+        page_data['table'] = list_table
+        print(json.dumps(page_data, indent=4))
+    except Exception as e:
+        logger.error("Error invoice credit: %s", str(e))
+        return None           
 
 @time_execution
 def classifier_invoice_stand_aero(pages):

@@ -13,4 +13,4 @@ python main.py invoice epcor pdf/11.Invoice_Epcor1.pdf
 python main.py invoice epcor_2 pdf/Invoice_Epcor.pdf
 python main.py invoice stand_aero pdf/17.Invoice_StandAero.pdf
 python main.py invoice ameco_3 pdf/13.Invoice_Ameco3.pdf
-
+python main.py credit stand_aero pdf/Credit-StandardAero.pdf

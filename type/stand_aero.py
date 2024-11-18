@@ -10,6 +10,6 @@ stand_aero = {
     'sub_total' : 'SUB-TOTAL',
     'shipping' : 'Shipping',
     'TOTAL' : 'TOTAL',
-    'invoice_number' : 'Invoice #:',
+    'invoice_number' : 'Invoice',
     'date' : 'Date:',
 }
