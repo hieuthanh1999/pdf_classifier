@@ -8,6 +8,7 @@ class TypeInvoice(Enum):
     REPAIR = 'repair'
     LC = 'lc'
     CREDIT = 'credit'
+    DEPOSIT = 'deposit'
 
 
     

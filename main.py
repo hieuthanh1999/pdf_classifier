@@ -86,6 +86,8 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_stengineering(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.AERCAP.value:
                 classifier_invoice_aercap(pdf.pages)
+            if type_invoice == TypeInvoice.DEPOSIT.value and code == Code.ROLLS_ROYCE.value:
+                classifier_invoice_deposit_rolls_royce(pdf.pages)
         pdf.close()
     except IOError as e:
         print({"error": "Không thể mở tập tin " + str(e)})
