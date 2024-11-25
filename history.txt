@@ -16,3 +16,4 @@ python main.py invoice ameco_3 pdf/13.Invoice_Ameco3.pdf
 python main.py credit stand_aero pdf/Credit-StandardAero.pdf
 python main.py invoice iae_2 pdf/9.Invoice_IAE2.pdf
 python main.py invoice  stengineering pdf/24.Invoice_STEngineering.pdf
+python main.py invoice aercap pdf/26.Invoice_AerCap.pdf

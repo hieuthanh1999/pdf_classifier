@@ -24,3 +24,4 @@ class Code(Enum):
     STAND_AERO = 'stand_aero'
     LUFTHANSA = 'lufthansa'
     STENGINEERING = 'stengineering'
+    AERCAP = 'aercap'
