@@ -83,7 +83,8 @@ def classifier_invoice_ameco(pages):
                             
                             list_table.append(model.to_dict())
         page_data['description'] = list_table
-        write_json_to_file(page_data)
+        # write_json_to_file(page_data)
+        print(json.dumps(page_data, indent=4))
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None

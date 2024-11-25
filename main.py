@@ -54,7 +54,7 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_rolls_royce(pdf.pages)
             if type_invoice == TypeInvoice.REPAIR.value and code == Code.ROLLS_ROYCE.value:
                 classifier_invoice_credit_rolls_royce(pdf.pages)
-            if type_invoice == TypeInvoice.INVOICE and code == Code.AMECO.value:
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.AMECO.value:
                 classifier_invoice_ameco(pdf.pages)
             if type_invoice == TypeInvoice.LC.value and code == Code.AMECO.value:
                 classifier_invoice_lc_ameco(pdf.pages)
@@ -82,6 +82,8 @@ def extract_data(type_invoice, code, file_path):
                     classifier_credit_stand_aero(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.IAE_2.value:
                 classifier_invoice_iae_2(pdf.pages)
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.STENGINEERING.value:
+                classifier_invoice_stengineering(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.AERCAP.value:
                 classifier_invoice_aercap(pdf.pages)
         pdf.close()

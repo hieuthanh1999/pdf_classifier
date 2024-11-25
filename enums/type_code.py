@@ -23,4 +23,5 @@ class Code(Enum):
     EPCOR_2 = 'epcor_2'
     STAND_AERO = 'stand_aero'
     LUFTHANSA = 'lufthansa'
+    STENGINEERING = 'stengineering'
     AERCAP = 'aercap'
