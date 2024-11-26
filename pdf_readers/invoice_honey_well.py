@@ -27,60 +27,55 @@ def classifier_honey_well_invoice(pages):
         list_table_repair_or_overhaul_parts = []
         list_table_over_and_above_nor_parts = []
         list_table_over_and_above_roo_parts = []
-        regex_nor = re.compile(r"(\d+)\s+(\S+)\s*(.*?)\s{2,}(.+?)\s{2,}(\S*)\s*(.*?)\s+(\d+\.\d+)\s+\$\s+([\d,]+\.\d+)\s+\$\s+([\d,]+\.\d+)\s+\$\s+([\d,]+\.\d+)")
-        regex_roo = re.compile(r"(\d{6})\s+(\S+)\s*(.*?)\s{2,}(.+?)\s{2,}(.+?)\s{2,}(.+?)\s{2,}(\d+\.\d{2})\s+\$\s+([\d,]+\.\d{2})\s+\$\s+([\d,]+\.\d{2})")
+        regex_nor = re.compile(r"(\d+)\s+(\S+)\s*(.*?)\s{2,}(.+?)\s{2,}(\S*?)\s*(\S*?)\s+(\d+\.\d+)\s+\$\s+([\d,]*\.\d+)\s+\$\s+([\d,]*\.\d+)\s+\$\s+([\d,]*\.\d+)")
+        regex_roo = re.compile(r"(\d+)\s+(\S+)\s*(.*?)\s{2,}(.+?)\s{2,}(\S*?)\s*(\S*?)\s{2,}(Repair|Overhaul|)\s{2,}+(\d+\.\d+)\s+\$\s+([\d,]*\.\d+)\s+\$\s+([\d,]*\.\d+)")
         key = keyword(honey_well)
         new_or_replace_parts = False
         repair_or_overhaul_parts = False
         over_and_above_nor_parts = False
         over_and_above_roo_parts = False
         for p_idx, page in enumerate(pages):
-            
             page_name = ''
             text = page.extract_text().split('\n')
             details = {}
             start_idx = None
             end_idx = None
             for i, line_row in enumerate(text):
-                #print(line_row)
+                logger.info("%s", line_row)
+                # print(line_row)
                 if key.quote_totals in line_row:
                     if start_idx is None:
                         start_idx = i
                     end_idx = i 
                 try:
-                    if 'NEW/REPLACED PARTS' in line_row:
+                    if 'NEW/REPLACED PARTS' in line_row and 'OVER & ABOVE' not in line_row and 'TOTAL' not in line_row:
                         new_or_replace_parts = True
                     pass
                 except: pass
                 if new_or_replace_parts:
-                    
                     if 'TOTAL NEW/REPLACED PARTS' in line_row:
                         values = line_row.split('$')
-                        total_new_or_replace_parts = to_float(values[1].replace(' ', ''))
+                        total_new_or_replace_parts = to_float(values[1].strip())
                         page_data['total_new_or_replace_parts'] = total_new_or_replace_parts
                         new_or_replace_parts = False
                     else:
                         match = regex_nor.search(line_row)
                         if match:
-                            #print(match.groups())
                             list_table_new_or_replace_parts.append(put_data_to_table_nor(match))
                 try:
-                    if 'REPAIR/OVERHAUL PARTS' in line_row:
+                    if 'REPAIR/OVERHAUL PARTS' in line_row and 'OVER & ABOVE' not in line_row and 'TOTAL' not in line_row:
                         repair_or_overhaul_parts = True
                     pass
                 except: pass
                 if repair_or_overhaul_parts:
                     if 'TOTAL REPAIR/OVERHAUL PARTS' in line_row:
                         values = line_row.split('$')
-                        total_repair_or_overhaul_parts = to_float(values[1].replace(' ', ''))
+                        total_repair_or_overhaul_parts = to_float(values[1].strip())
                         page_data['total_repair_or_overhaul_parts'] = total_repair_or_overhaul_parts
                         repair_or_overhaul_parts = False
                     else:
                         match = regex_roo.search(line_row)
-                        
-                        print(line_row)
                         if match:
-                            print(match.groups())
                             list_table_repair_or_overhaul_parts.append(put_data_to_table_roo(match))
                 try:
                     if 'OVER & ABOVE NEW/REPLACED PARTS' in line_row:
@@ -90,7 +85,7 @@ def classifier_honey_well_invoice(pages):
                 if over_and_above_nor_parts:
                     if 'TOTAL NEW/REPLACED PARTS' in line_row:
                         values = line_row.split('$')
-                        total_over_and_above_nor_parts = to_float(values[1].replace(' ', ''))
+                        total_over_and_above_nor_parts = to_float(values[1].strip())
                         page_data['total_over_and_above_nor_parts'] = total_over_and_above_nor_parts
                         over_and_above_nor_parts = False
                     else:
@@ -133,14 +128,6 @@ def classifier_honey_well_invoice(pages):
                         # logger.info("%s", currency)
                         # logger.info("%s", amount)
                         
-                                    
-            for p_idx, page in enumerate(pages):
-                tables = page.extract_tables()
-                for table in tables:
-                    for row in table:
-                        processed_row = process_table_row(row)
-                        #print(processed_row)
-                        logger.info("%s", processed_row)
         if len(data_page_quote_totals) > 0:
             page_name = 'quote_totals'
         if page_name and is_quote_totals:
@@ -151,31 +138,31 @@ def classifier_honey_well_invoice(pages):
         page_data['repair_or_overhaul_parts'] = list_table_repair_or_overhaul_parts
         page_data['over_and_above_nor_parts'] = list_table_over_and_above_nor_parts
         page_data['over_and_above_roo_parts'] = list_table_over_and_above_roo_parts
-        # write_json_to_file(page_data)
+        #  write_json_to_file(page_data)
         print(json.dumps(page_data, indent=4))     
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None
     
-@time_execution
+# @time_execution
 def put_data_to_table_roo(match):
-    try:
+    try:    
         model = Details()
         model.item = match.group(1)
         model.part_number = match.group(2)
         model.part_no_out = match.group(3)
         model.description = match.group(4)
-        model.service_bulletin = match.group(5)
-        model.defect_description = match.group(6)
+        model.service_bulletin = match.group(5) 
+        model.defect_description = match.group(6) 
         model.repair_or_overhaul_description = match.group(7)
-        model.quantity = to_int(match.group(8))
+        model.quantity = to_float(match.group(8))
         model.unit_price = to_float(match.group(9))
         model.extend_price = to_float(match.group(10))
         return model.to_dict()
     except Exception as e:
         print(f"Error: {e}")
         return None   
-@time_execution
+# @time_execution
 def put_data_to_table_nor(match):
     try:
         model = Details()
@@ -185,7 +172,7 @@ def put_data_to_table_nor(match):
         model.description = match.group(4)
         model.service_bulletin = match.group(5)
         model.defect_description = match.group(6)
-        model.quantity = to_int(match.group(7))
+        model.quantity = to_float(match.group(7))
         model.unit_price = to_float(match.group(8))
         model.mhf = to_float(match.group(9))
         model.extend_price = to_float(match.group(10))
