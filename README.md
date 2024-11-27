@@ -90,3 +90,33 @@ You need to add the following line to your `~/.bash_profile` or `~/.bashrc` or `
 ```bash
 > python/python3/python3.9 <path>/main.py <type> <code> <path>
 ```
+
+
+# poppler and pytesseract install Mac: 
+## install : 
+```bash
+> brew install poppler
+```
+
+```bash
+> brew install tesseract
+```
+
+## config path:
+```bash
+> which pdftoppm
+```
+
+```bash
+> which tesseract
+```
+
+
+# poppler and pytesseract install WIN: 
+## install : 
+```bash
+> (https://tesseract-ocr.github.io/tessdoc/Installation.html)
+```
+```bash
+> (https://github.com/oschwartz10612/poppler-windows/releases)
+```

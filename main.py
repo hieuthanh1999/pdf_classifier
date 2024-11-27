@@ -13,10 +13,16 @@ import time
 from common import *
 from pdf_readers import *
 from dotenv import load_dotenv
+import pytesseract
+
 
 load_dotenv()
 
 poppler_path = os.getenv("POPPLER_PATH")
+poppler_path = r'/usr/local/bin'
+#pytesseract.pytesseract.tesseract_cmd = r"/usr/local/bin/tesseract"
+tesseract_path = os.getenv("TESSERACT_PATH")
+pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
 #----------------------------------------------------------------
 # MAIN
@@ -45,7 +51,7 @@ def extract_data(type_invoice, code, file_path):
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.PW.value:
                 classifier_invoice_pw(pdf.pages)
             if type_invoice == TypeInvoice.LC.value and code == Code.MTU.value:
-                classifier_lc_mtu_invoice(pdf.pages)
+                classifier_lc_mtu_invoice(file_path, poppler_path, pytesseract)
             if type_invoice == TypeInvoice.REPAIR.value and code == Code.PRATT_WHITNEY_CANADA.value:
                 classifier_repair_invoice(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.HONEY_WELL.value:
