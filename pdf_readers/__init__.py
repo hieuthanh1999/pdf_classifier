@@ -1,4 +1,4 @@
-from .invoice_credit import classifier_invoice_credit, classifier_invoice_lc_ge
+from .invoice_credit import classifier_invoice_credit, classifier_invoice_lc_ge, classifier_credit_ge_2
 from .invoice_repair import classifier_repair_invoice
 from .invoice_honey_well import classifier_honey_well_invoice
 from .invoice_rolls_royce import classifier_invoice_rolls_royce,classifier_invoice_credit_rolls_royce, classifier_invoice_deposit_rolls_royce

@@ -7,6 +7,7 @@ class Code(Enum):
     IAE = 'iae'
     IAE_2 = 'iae_2'
     GE = 'ge'
+    GE_2 = 'ge_2'
     PRATT_WHITNEY_CANADA = 'pratt_whitney_canada'
     AMECO = 'ameco'
     AMECO_3 = 'ameco_3'
