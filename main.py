@@ -96,6 +96,8 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_deposit_rolls_royce(pdf.pages)
             if type_invoice == TypeInvoice.LC.value and code == Code.AMECO.value:
                 classifier_lc_ameco(file_path, poppler_path, pytesseract)
+            if type_invoice == TypeInvoice.LC.value and code == Code.GE.value:
+                classifier_invoice_lc_ge(file_path, poppler_path, pytesseract)
         pdf.close()
     except IOError as e:
         print({"error": "Không thể mở tập tin " + str(e)})
