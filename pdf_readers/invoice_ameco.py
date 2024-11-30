@@ -11,6 +11,71 @@ import time
 from common import *
 from pdf_readers import *
 import pandas as pd
+from pdf_readers import *
+import pandas as pd
+from pdf2image import convert_from_path
+
+@time_execution
+def classifier_lc_ameco(path, poppler_path, pytesseract):
+    try:
+        key = keyword(lc_mtu)
+        pages = convert_from_path(path, poppler_path=poppler_path)
+        inv = dict()
+        custom_config = r'-l eng -c tessedit_char_whitelist' \
+                        r'="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-:., " '
+        custom_config += r'--psm 6'
+        page_data = {}
+        dict_total = {}
+        list_table = []
+        extracting = False
+        total_amount = None
+        for p_idx, page in enumerate(pages):
+            text = pytesseract.image_to_string(page, config=custom_config)
+            # for i, text in enumerate(data):
+            #     logger.info("data: %s", str(text))
+            for i, line_row in enumerate(text.split('\n')):
+                line_row = line_row.strip()
+
+                if 'Description Amount' in line_row:
+                    extracting = True
+                    continue
+                if 'Total amount' in line_row:
+                    logger.info("%s", line_row)
+                    extracting = False
+                    total_pattern = r'Total amount[:\uFF1A]?\s([\d,]+\.\d{2})\s(USD|EUR|GBP|JPY|CNY)'
+
+                    total_match = re.search(total_pattern, line_row)
+                    if total_match:
+                        total_amount = to_float(total_match.group(1))
+                        currency = total_match.group(2) 
+                        dict_total['amount'] = total_amount
+                        dict_total['currency'] = currency
+                        page_data['total_amount'] = dict_total
+                    break
+                if extracting:
+                    charge_pattern = r'(.+?)\s([\d,]+\.\d{2})\s(USD|EUR|GBP|JPY|CNY)'
+                    charge_match = re.search(charge_pattern, line_row)
+                    if charge_match:
+                        print(charge_match.groups())
+                        
+                        model =  Details()
+                        escription = charge_match.group(1).strip() if charge_match.group(1) else ""
+                        total = to_float(charge_match.group(2)) if charge_match.group(2) else ""
+                        currency = charge_match.group(3) if charge_match.group(3) else ""
+
+                        model.description = description
+                        model.total = total
+                        model.currency = currency
+                        
+                        list_table.append(model.to_dict())
+        page_data['description'] = list_table
+
+        print(json.dumps(page_data, indent=4))  
+       
+    except Exception as e:
+        logger.error("Error invoice credit: %s", str(e))
+        return None
+
 
 @time_execution
 def classifier_invoice_lc_ameco(pages):

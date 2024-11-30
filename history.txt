@@ -19,4 +19,5 @@ python main.py invoice  stengineering pdf/24.Invoice_STEngineering.pdf
 python main.py invoice aercap pdf/26.Invoice_AerCap.pdf
 python main.py deposit rolls_royce pdf/29.Invoice-RR-deposit.pdf
 python main.py invoice honey_well pdf/14.Invoice_Honeywell.pdf
- python main.py lc mtu pdf/LC-MTU.pdf  
+python main.py lc mtu pdf/LC-MTU.pdf 
+python main.py lc ameco pdf/LCAmeco.pdf
