@@ -148,16 +148,16 @@ def classifier_honey_well_invoice(pages):
 def put_data_to_table_roo(match):
     try:    
         model = Details()
-        model.item = match.group(1)
-        model.part_number = match.group(2)
-        model.part_no_out = match.group(3)
-        model.description = match.group(4)
-        model.service_bulletin = match.group(5) 
-        model.defect_description = match.group(6) 
-        model.repair_or_overhaul_description = match.group(7)
-        model.quantity = to_float(match.group(8))
-        model.unit_price = to_float(match.group(9))
-        model.extend_price = to_float(match.group(10))
+        model.item = match.group(1) if match.group(1) else ""
+        model.part_number = match.group(2) if match.group(2) else ""
+        model.part_no_out = match.group(3) if match.group(3) else ""
+        model.description = match.group(4) if match.group(4) else ""
+        model.service_bulletin = match.group(5) if match.group(5) else ""
+        model.defect_description = match.group(6) if match.group(6) else "" 
+        model.repair_or_overhaul_description = match.group(7) if match.group(7) else ""
+        model.quantity = to_float(match.group(8)) if match.group(8) else ""
+        model.unit_price = to_float(match.group(9)) if match.group(9) else ""
+        model.extend_price = to_float(match.group(10)) if match.group(10) else ""
         return model.to_dict()
     except Exception as e:
         print(f"Error: {e}")
@@ -166,16 +166,16 @@ def put_data_to_table_roo(match):
 def put_data_to_table_nor(match):
     try:
         model = Details()
-        model.item = match.group(1)
-        model.part_number = match.group(2)
-        model.part_no_out = match.group(3)
-        model.description = match.group(4)
-        model.service_bulletin = match.group(5)
-        model.defect_description = match.group(6)
-        model.quantity = to_float(match.group(7))
-        model.unit_price = to_float(match.group(8))
-        model.mhf = to_float(match.group(9))
-        model.extend_price = to_float(match.group(10))
+        model.item = match.group(1) if match.group(1) else ""
+        model.part_number = match.group(2) if match.group(2) else ""
+        model.part_no_out = match.group(3) if match.group(3) else ""
+        model.description = match.group(4) if match.group(4) else ""
+        model.service_bulletin = match.group(5) if match.group(5) else ""
+        model.defect_description = match.group(6) if match.group(6) else ""
+        model.quantity = to_float(match.group(7)) if match.group(7) else ""
+        model.unit_price = to_float(match.group(8)) if match.group(8) else ""
+        model.mhf = to_float(match.group(9)) if match.group(9) else ""
+        model.extend_price = to_float(match.group(10)) if match.group(10) else ""
         return model.to_dict()
     except Exception as e:
         print(f"Error: {e}")

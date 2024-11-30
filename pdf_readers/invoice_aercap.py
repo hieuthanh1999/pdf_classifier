@@ -35,15 +35,17 @@ def classifier_invoice_aercap(pages):
                     match = list_pattern.search(line)
                     if match:
                         model = Details()
-                        model.date = match.group('date')
-                        model.transaction_type = match.group('transaction_type')
-                        model.amount = to_float(match.group('amount'))
+                        model.date = match.group('date') if match.group('date') else ""
+                        model.transaction_type = match.group('transaction_type') if match.group('transaction_type') else ""
+                        model.amount = to_float(match.group('amount')) if match.group('amount') else ""
                         list_table.append(model.to_dict())
                     if 'Credit Note Total' in line:
                         extracting_data = False
                         total_match = re.search(r'Credit Note Total\s+([\d,]+\.\d{2})', line)
                         if total_match:
                             page_data['total'] = to_float(total_match.group(1))
+                        else:
+                            page_data['total'] = 0
         page_data['table'] = list_table
         #write_json_to_file(page_data)
         print(json.dumps(page_data, indent=4))          

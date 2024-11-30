@@ -79,23 +79,23 @@ def classifier_invoice_epcor(pages):
                     if match:
                         detail = Details()
                         try:
-                            detail.category = match.group(1).strip()
+                            detail.category = match.group(1).strip() if match.group(1) else ''
                         except:
                             detail.category = ''
                         try:
-                            detail.description = match.group(2).strip()
+                            detail.description = match.group(2).strip() if match.group(2) else ''
                         except:
                             detail.description = ''
                         try:
-                            detail.quantity =to_float(match.group(3).strip())
+                            detail.quantity =to_float(match.group(3).strip()) if match.group(3) else ''
                         except:
                             detail.quantity = 0
                         try:
-                            detail.unit_price = to_float(match.group(4).strip())
+                            detail.unit_price = to_float(match.group(4).strip()) if match.group(4) else ''
                         except:
                             detail.unit_price = 0
                         try:
-                            detail.total_price = to_float(match.group(5).strip())
+                            detail.total_price = to_float(match.group(5).strip()) if match.group(5) else ''
                         except:
                             detail.total_price = 0
                         list_table.append(detail.to_dict())
@@ -235,13 +235,13 @@ def classifier_invoice_epcor_2(pages):
 def put_data(match):
     try:
         model = Details()
-        model.part_number = match.group(1)
-        model.description = remove_duplicate_characters(match.group(2))
-        model.quantity = to_int(match.group(3))
-        model.category = match.group(4)
-        model.costea = to_float(match.group(5))
-        model.total_cost_estimate = to_float(match.group(6))
-        model.comment = match.group(7)
+        model.part_number = match.group(1) if match.group(1) else ""
+        model.description = remove_duplicate_characters(match.group(2)) if match.group(2) else ""
+        model.quantity = to_int(match.group(3)) if match.group(3) else ""
+        model.category = match.group(4) if match.group(4) else ""
+        model.costea = to_float(match.group(5)) if match.group(5) else ""
+        model.total_cost_estimate = to_float(match.group(6)) if match.group(6) else ""
+        model.comment = match.group(7) if match.group(7) else ""
         return model.to_dict()
     except Exception as e:
         print(f"Error: {e}")
