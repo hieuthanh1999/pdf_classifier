@@ -106,11 +106,11 @@ def classifier_invoice_iae_2(pages):
                         net_price = match.group('net_price')
 
                         model =  Details()
-                        model.description = description
-                        model.condition = condition
-                        model.qty_uom = qty_uom
-                        model.unit_price = unit_price
-                        model.net_price = net_price
+                        model.description = description if description else ""
+                        model.condition = condition if condition else ""
+                        model.qty_uom = qty_uom if qty_uom else ""
+                        model.unit_price = unit_price if unit_price else ""
+                        model.net_price = net_price if net_price else ""
                         list_table.append(model.to_dict())
                     if 'Total amount due' in line or 'Totalamountdue' in line:
                         extract_sumary = False
@@ -141,41 +141,41 @@ def classifier_invoice_iae_2(pages):
                     if match_oac:
                         
                         model =  Details()
-                        model.type = match_oac.group(1)
-                        model.charge_type = match_oac.group(2)
-                        model.category_type = match_oac.group(3)
-                        model.build_group = match_oac.group(4)
-                        model.ata_number = match_oac.group(5)
-                        model.part_number = match_oac.group(6)
-                        model.part_name = match_oac.group(7)
-                        model.quantity = to_int(match_oac.group(8))
-                        model.hour = to_float(match_oac.group(9))
-                        model.unit_price = to_float(match_oac.group(10))
-                        model.sub_total = to_float(match_oac.group(11))
-                        model.adjustment = to_float(match_oac.group(12).replace('%', ''))
-                        model.handling_fee = to_float(match_oac.group(13).replace('%', ''))
-                        model.iae_handling_fee = to_float(match_oac.group(14))
-                        model.discount_percent = to_float(match_oac.group(15).replace('%', ''))
-                        model.discount_amount = to_float(match_oac.group(16))
-                        model.oaa_total = to_float(match_oac.group(17)) 
-                        model.source = match_oac.group(18)
-                        model.material_type = match_oac.group(19)
-                        model.exess_work_reason = match_oac.group(20)
+                        model.type = match_oac.group(1) if match_oac.group(1) else ""
+                        model.charge_type = match_oac.group(2) if match_oac.group(2) else ""
+                        model.category_type = match_oac.group(3) if match_oac.group(3) else ""
+                        model.build_group = match_oac.group(4) if match_oac.group(4) else ""
+                        model.ata_number = match_oac.group(5) if match_oac.group(5) else ""
+                        model.part_number = match_oac.group(6) if match_oac.group(6) else ""
+                        model.part_name = match_oac.group(7) if match_oac.group(7) else ""
+                        model.quantity = to_int(match_oac.group(8)) if match_oac.group(8) else ""
+                        model.hour = to_float(match_oac.group(9)) if match_oac.group(9) else ""
+                        model.unit_price = to_float(match_oac.group(10)) if match_oac.group(10) else ""
+                        model.sub_total = to_float(match_oac.group(11)) if match_oac.group(11) else ""
+                        model.adjustment = to_float(match_oac.group(12).replace('%', '')) if match_oac.group(12) else ""
+                        model.handling_fee = to_float(match_oac.group(13).replace('%', '')) if match_oac.group(13) else ""
+                        model.iae_handling_fee = to_float(match_oac.group(14)) if match_oac.group(14) else ""
+                        model.discount_percent = to_float(match_oac.group(15).replace('%', '')) if match_oac.group(15) else ""
+                        model.discount_amount = to_float(match_oac.group(16)) if match_oac.group(16) else ""
+                        model.oaa_total = to_float(match_oac.group(17)) if match_oac.group(17) else ""
+                        model.source = match_oac.group(18) if match_oac.group(18) else ""
+                        model.material_type = match_oac.group(19) if match_oac.group(19) else ""
+                        model.exess_work_reason = match_oac.group(20) if match_oac.group(20) else ""
                         list_table_oac.append(model.to_dict())
                     else:
                         match_oac = re.compile(pattern_oac_sumary).search(line)
                         if match_oac:
                             model = Details()
-                            model.quantity = to_int(match_oac.group(1))
-                            model.hours = to_int(match_oac.group(2))
-                            model.unit_price = to_float(match_oac.group(3))
-                            model.sub_total = to_float(match_oac.group(4))
-                            model.adjustment = to_float(match_oac.group(5))
-                            model.handling_fee = to_float(match_oac.group(6))
-                            model.iae_handling_fee = to_float(match_oac.group(7))
-                            model.discount_percent = to_float(match_oac.group(8))
-                            model.discount_amount = to_float(match_oac.group(9))
-                            model.oaa_total = to_float(match_oac.group(10))
+                            model.quantity = to_int(match_oac.group(1)) if match_oac.group(1) else ""
+                            model.hours = to_int(match_oac.group(2)) if match_oac.group(2) else ""
+                            model.unit_price = to_float(match_oac.group(3)) if match_oac.group(3) else ""
+                            model.sub_total = to_float(match_oac.group(4)) if match_oac.group(4) else ""
+                            model.adjustment = to_float(match_oac.group(5)) if match_oac.group(5) else ""
+                            model.handling_fee = to_float(match_oac.group(6)) if match_oac.group(6) else ""
+                            model.iae_handling_fee = to_float(match_oac.group(7)) if match_oac.group(7) else ""
+                            model.discount_percent = to_float(match_oac.group(8)) if match_oac.group(8) else ""
+                            model.discount_amount = to_float(match_oac.group(9)) if match_oac.group(9) else ""
+                            model.oaa_total = to_float(match_oac.group(10)) if match_oac.group(10) else ""
                             page_data['oac_summary'] = model.to_dict()
                     if 'Invoice Total' in line:
                         oac = False
@@ -186,13 +186,13 @@ def classifier_invoice_iae_2(pages):
                     match_last_table = pattern_last_table.search(line)
                     if match_last_table:
                         model =  Details()
-                        model.lid = match_last_table.group(1)
-                        model.description = match_last_table.group(2)
-                        model.part_number = match_last_table.group(3)
-                        model.removal_reason = match_last_table.group(4)
-                        model.met_build_objective = match_last_table.group(5)
-                        model.target_life = match_last_table.group(6)
-                        group_life = match_last_table.group(7)
+                        model.lid = match_last_table.group(1) if match_last_table.group(1) else ""
+                        model.description = match_last_table.group(2) if match_last_table.group(2) else ""
+                        model.part_number = match_last_table.group(3) if match_last_table.group(3) else ""
+                        model.removal_reason = match_last_table.group(4) if match_last_table.group(4) else ""
+                        model.met_build_objective = match_last_table.group(5) if match_last_table.group(5) else ""
+                        model.target_life = match_last_table.group(6) if match_last_table.group(6) else ""
+                        group_life = match_last_table.group(7) 
                         group_life = remove_whitespace_before_comma(group_life)
                         group_life = remove_whitespace_before_number(group_life)
                         group_life = remove_extra_spaces(group_life)

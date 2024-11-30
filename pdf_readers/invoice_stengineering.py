@@ -15,12 +15,10 @@ import pandas as pd
 def classifier_invoice_stengineering(pages):
     try:
         page_data = {}
-        dict_total = {}
         list_table = []
         list_gst = []
         extracting = False
         extract_gst = False
-        charges = []
         total_amount = None
         key = keyword(rolls_royce)
         pattern = r"(\d+)\s(\d{2}-\w{3}-\d{4})\s+([\w\s\d]+)\s+(\d{2}-\w{3}-\d{4})"
@@ -63,7 +61,7 @@ def classifier_invoice_stengineering(pages):
                             model.description = match.group(1) + ' ' + total_amount
                         else:
                             model.description = match.group(1)
-                        model.exchange_rate = match.group(2) if match.group(2) else 'N/A'
+                        model.exchange_rate = match.group(2) if match.group(2) else ''
                         model.amount = to_float(match.group(3))
                         list_gst.append(model.to_dict())
         page_data['table'] = list_table
