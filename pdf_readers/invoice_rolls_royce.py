@@ -20,26 +20,31 @@ def classifier_invoice_deposit_rolls_royce(pages):
         list_table = []
         extracting = False
         key = keyword(rolls_royce)
-        pattern = r"(.*?)\s*([\d,]+\.\d{2})"
+        pattern = r"(.*)\(([\d,]+\.\d{2})\)"
+        pattern_time = r"(.*?)(?:\s(\d{1,3}(?:,\d{3})*\.\d{2}))?$"
         for p_idx, page in enumerate(pages):
             texts = page.extract_text().split('\n')
             for i, line in enumerate(texts):
-                logger.info("Line %s: %s", i, line)
+
                 if 'Invoice No:' in line:
-                    page_data['invoice_no'] = line.split(':')[1].strip()
+                    page_data['invoice_no'] = line.split(':', 1)[1].strip() if ':' in line else ""
                 if 'Date:' in line:
-                    page_data['date'] = line.split(':')[1].strip()
+                    page_data['date'] = line.split(':', 1)[1].strip() if ':' in line else ""
                 if 'Due Date:' in line:
-                    page_data['due_date'] = line.split(':')[1].strip()
+                    page_data['due_date'] = line.split(':', 1)[1].strip() if ':' in line else ""
                 if 'Description' in line:
                     extracting = True
                     continue
+
                 if extracting:
                     if 'Payment Instructions' in line:
                         extracting = False
                         continue
                     match = re.search(pattern, line)
+                    # logger.info("Line %s: %s", i, line)
+
                     if match:
+                        # logger.info("Line %s: %s", i, texts)
                         model = Details()
                         if not match.group(1):
                             model.description = texts[i+1]
@@ -47,27 +52,40 @@ def classifier_invoice_deposit_rolls_royce(pages):
                             model.description = match.group(1)
                         model.goods_value = to_float(match.group(2))
                         list_table.append(model.to_dict())
+                    else:
+                        old_pattern = r"(.*?)(\d{1,3}(?:,\d{3})*\.\d{2})$"
+                        old_match = re.search(old_pattern, line)
+                        if old_match:
+                            # logger.info("Line %s: Match found with old pattern", i)
+                            model = Details()
+                            if not old_match.group(1):
+                                model.description = texts[i + 1]
+                            else:
+                                model.description = old_match.group(1).strip()
+                            model.goods_value = to_float(old_match.group(2))
+                            list_table.append(model.to_dict())
                 if 'Net Total' in line:
                     match = re.search(r'[\d,]+\.\d{2}', line)
-                    key_data['net_total'] = to_float(match.group(0)) if match else None
+                    key_data['net_total'] = to_float(match.group(0)) if match else 0
                 if 'VAT' in line:
-                    match = re.search(r'VAT\s*@\s*([\d.]+)\s*%\s*([\d,]+\.\d{2})', line)
-                    key_data['vat_percentage'] = to_float(match.group(1)) if match else None
-                    key_data['vat_total'] = to_float(match.group(2)) if match else None
+                    match = re.search(r'VAT\s+([\d.]+%)\s*([\d.]+)', line)
+                    page_data['vat_percentage'] = match.group(1) if match else "0%"
+                    page_data['vat_total'] = float(match.group(2)) if match else 0
                 if 'Total' in line and ('Payable' in texts[i+1] or 'Payable' in texts[i+2]):
                     match = re.search(r'[\d,]+\.\d{2}', line)
                     if match:
-                        key_data['total_payable'] = to_float(match.group(0))
+                        page_data['total_payable'] = to_float(match.group(0))
                     else:
                         match = re.search(r'[\d,]+\.\d{2}', texts[i+1])
                         if match:
-                            key_data['total_payable'] = to_float(match.group(0))
+                            page_data['total_payable'] = to_float(match.group(0))
                         else:
                             match = re.search(r'[\d,]+\.\d{2}', texts[i+2])
-                            key_data['total_payable'] = to_float(match.group(0)) if match else None
-        key_data['table'] = list_table
-        page_data['invoice'] = key_data
+                            page_data['total_payable'] = to_float(match.group(0)) if match else 0
+        page_data['table'] = list_table
         #write_json_to_file(page_data)
+        if "invoice_no" not in page_data or not page_data["invoice_no"]:
+            return classifier_invoice_rolls_royce(pages)
         print(json.dumps(page_data, indent=4))
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
@@ -102,11 +120,11 @@ def classifier_invoice_credit_rolls_royce(pages):
                 match_vat = re.search(r'VAT\s*@\s*([\d.]+)\s*%\s*([\d.]+)', line)
                 if match_vat:
                     page_data['vat_percentage'] = to_percentage(match_vat.group(1))  # Giá trị phần trăm
-                    page_data['vat_total'] = to_float(match_vat.group(2))  # Giá trị tiề 
+                    page_data['vat_total'] = to_float(match_vat.group(2))  # Giá trị tiề
                 match = re.search(r'TOTAL USD\s+CREDIT\s+([\d,]+\.\d{2})', line)
                 if match:
                     page_data['total_usd_credit'] = to_float(match.group(1))
-               
+
 
         page_data['table'] = list_table
         print(json.dumps(page_data, indent=4))
@@ -116,13 +134,13 @@ def classifier_invoice_credit_rolls_royce(pages):
         print(f"Error: {e}")
         return None
 
-                        
-               
-        #print(invoice.to_string())           
+
+
+        #print(invoice.to_string())
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None
-    
+
 @time_execution
 def classifier_invoice_rolls_royce(pages):
     try:
@@ -153,7 +171,7 @@ def classifier_invoice_rolls_royce(pages):
                         list_table.append(data_row)
 
                     row_text = ' '.join([str(cell) for cell in row if cell])
-        
+
                     #'TOTAL EXCLUDING VAT'
                     if key.total_excluding_vat in row_text or key.total_excluding_va_t in row_text:
                         total_excluding_vat = re.search(r'[\d,]+\.\d{2}', row_text)
@@ -168,7 +186,7 @@ def classifier_invoice_rolls_royce(pages):
         key_data['table'] = list_table
         page_data['invoice'] = key_data
         #write_json_to_file(page_data)
-        print(json.dumps(page_data, indent=4))          
+        print(json.dumps(page_data, indent=4))
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None

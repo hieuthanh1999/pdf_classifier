@@ -17,6 +17,8 @@ import pytesseract
 @time_execution
 def classifier_invoice_credit(pages):
     try:
+        check_covered = True
+        check_o = True
         invoice = Invoice()
         key = keyword(credit)
         for p_idx, page in enumerate(pages):
@@ -40,6 +42,177 @@ def classifier_invoice_credit(pages):
                             invoice.credit_note = to_float(number)
                         else : invoice.credit_note = 0
                 except: pass
+
+                try:
+                    if "NTE CAP" in e:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.nte_cap = to_float(number)
+                        else : invoice.nte_cap = 0
+                except: pass
+
+                try:
+                    if "Covered" in e:
+                        check_covered = False
+                        check_o = True
+                except: pass
+
+                try:
+                    if "FPLS" in e and not check_covered and check_o:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.covered_fpls = to_float(number)
+                        else : invoice.covered_fpls= 0
+                except: pass
+
+                try:
+                    if "Labor O&A" in e and not check_covered and check_o:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.covered_labor = to_float(number)
+                        else : invoice.covered_labor = 0
+                except: pass
+                logger.info("data %s ---- %s ---- %s", e, check_covered, check_o)
+                try:
+                    if "Material" in e and not check_covered and check_o:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            logger.info("data %s ---- %s ", check_covered, check_o)
+                            number = number_credit.group(0)
+                            invoice.covered_material = number
+                        else : invoice.covered_material = 0
+                except: pass
+
+                try:
+                    if "Repair" in e and not check_covered and check_o:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.covered_repair = to_float(number)
+                        else : invoice.covered_repair = 0
+                except: pass
+
+                try:
+                    if "Test Cell Fee" in e and not check_covered and check_o:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.covered_test_cell_fee = to_float(number)
+                        else : invoice.covered_test_cell_fee = 0
+                except: pass
+
+                try:
+                    if "Total" in e and not check_covered and check_o:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.covered_total = to_float(number)
+                        else : invoice.covered_total = 0
+                except: pass
+
+                try:
+                    if "O&A" in e and not "Labor O&A" in e:
+                        check_covered = True
+                        check_o = False
+                except: pass
+
+                try:
+                    if "FPLS" in e and not check_o and check_covered:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.oq_fpls = to_float(number)
+                        else : invoice.oq_fpls = 0
+                except: pass
+
+                try:
+                    if "Labor O&A" in e and not check_o and check_covered:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.oq_labor = to_float(number)
+                        else : invoice.oq_labor = 0
+                except: pass
+
+                try:
+                    if "Material" in e and not check_o and check_covered:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.oq_material = to_float(number)
+                        else : invoice.oq_material = 0
+                except: pass
+
+                try:
+                    if "Repair" in e and not check_o and check_covered:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.oq_repair = to_float(number)
+                        else : invoice.oq_repair = 0
+                except: pass
+
+
+                try:
+                    if "Total SV" in e and not check_o and check_covered:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.oq_total = to_float(number)
+                        else : invoice.oq_total = 0
+                except: pass
+
+
+                try:
+                    if "Transportation ,TAT Penalty & Letter of Credit" in e and not check_o and check_covered:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.oq_transportation = to_float(number)
+                        else : invoice.oq_transportation = 0
+                except: pass
+
+
+                try:
+                    if "LC amount draw down " in e and not check_o and check_covered:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.oq_lc_amount = to_float(number)
+                        else : invoice.oq_lc_amount = 0
+                except: pass
+
+
+                try:
+                    if "Final invoice" in e and not check_o and check_covered:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.oq_final_invoice = to_float(number)
+                        else : invoice.oq_final_invoice = 0
+                except: pass
+
+
+                try:
+                    if "Invoice#" in e and not check_o and check_covered:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.oq_invoice_total = to_float(number)
+                        else : invoice.oq_invoice_total = 0
+                except: pass
+
+                try:
+                    if "Service Credit" in e and not check_o:
+                        number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+                        if number_credit:
+                            number = number_credit.group(0)
+                            invoice.oq_service_credit = to_float(number)
+                        else : invoice.oq_service_credit = 0
+                except: pass
                 #total credit and currency
                 try:
                     if key.total_credit in e:
@@ -49,157 +222,42 @@ def classifier_invoice_credit(pages):
                             price = total_credit.group(2)
                             invoice.total_credit = to_float(price)
                             invoice.currency_credit = currency
-                        else : 
+                        else :
                             invoice.total_credit = 0
                             invoice.currency_credit = 'USD'
-                            #logger.info("Data PDF NEXT LINE: %s", invoice.to_string()) 
+                            #logger.info("Data PDF NEXT LINE: %s", invoice.to_string())
                 except: pass
         #0.2s
-        print(invoice.to_string())           
+        print(invoice.to_string())
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None
 
 
 @time_execution
-def classifier_invoice_lc_ge(path, poppler_path, pytesseract):
+def classifier_invoice_lc_ge(path):
     try:
-        key = keyword(credit)
-        pages = convert_from_path(path, poppler_path=poppler_path)
-        inv = dict()
-        custom_config = r'-l eng -c tessedit_char_whitelist' \
-                        r'="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-:., " '
-        custom_config += r'--psm 6'
-        page_data = {}
-        dict_total = {}
-        list_table = []
-        extracting = False
-        total_amount = None
-        pattern_invoice = r'(\d+)\s+([a-z]{2}|\d*)\s+([a-z]{2}|\d{2}-[A-Z]{3}-\d{4})?'
+        pages = convert_from_path(path, dpi=300, poppler_path=r'/Users/hieuthanh/Desktop/OCR/pdf_classifier/Release-24/Library/bin')
+        invoice_texts = []
         for p_idx, page in enumerate(pages):
-            text = pytesseract.image_to_string(page, config=custom_config)
-            # for i, text in enumerate(data):
-            #     logger.info("data: %s", str(text))
-            text = text.split('\n')
-            for i, line_row in enumerate(text):
-                line_row = line_row.strip()
-                logger.info("line_row: %s", line_row)
-                #invoice
-                try:
-                    if key.invoice_no in line_row:
-                        if i + 1 < len(text):
-                            next_line = text[i + 1].strip()
-                            if next_line:
-                                match = re.search(pattern_invoice, next_line)
-                                if match:   
-                                    page_data['engine_serial_no'] = match.group(1) if match.group(1) else ""
-                                    page_data['invoice_no'] = match.group(2) if match.group(2) and not re.match(r'[a-z]{2}', match.group(2)) else ""
-                                    page_data['invoice_date'] = match.group(3) if match.group(3) and not re.match(r'[a-z]{2}', match.group(3)) else ""
-                except:
-                    page_data['engine_serial_no'] = ""
-                    page_data['invoice_no'] = ""
-                    page_data['invoice_date'] = ""
- 
-                if 'REPAIR OF' in line_row:
-                    extracting = True
-                    continue
-                if 'INVOICE TOTAL' in line_row:
-                    logger.info("%s", line_row)
-                    extracting = False
-                    total_pattern = r'INVOICE TOTAL[:\uFF1A]?\s(USD|EUR|GBP|JPY|CNY)\s([\d,]+\.\d{2})'
+            text = pytesseract.image_to_string(page, lang='eng')
+            invoice_texts.append(text)
+            logger.info("Text from page %d: %s", p_idx + 1, text)
 
-                    total_match = re.search(total_pattern, line_row)
-                    if total_match:
-                        total_amount = to_float(total_match.group(2))
-                        currency = total_match.group(1) 
-                        dict_total['amount'] = total_amount
-                        dict_total['currency'] = currency
-                        page_data['total_amount'] = dict_total
-                    break
-                if extracting:
-                    charge_pattern = r'(.+?)\s([\d,]+\.\d{2})'
-                    charge_match = re.search(charge_pattern, line_row)
-                    if charge_match:
-                        
-                        model =  Details()
-                        description = charge_match.group(1).strip() if charge_match.group(1) else ""
-                        total = to_float(charge_match.group(2)) if charge_match.group(2) else ""
-
-                        model.description = description
-                        model.total = total
-                        
-                        list_table.append(model.to_dict())
-        page_data['description'] = list_table
-
-        print(json.dumps(page_data, indent=4))  
+        # for p_idx, page in enumerate(pages):
+        #     text = page.extract_text().split('\n')
+        #     logger.info("%s", text)
+        #     for i, e in enumerate(text):
+        #         logger.info("%s", e)
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None
-@time_execution
-def classifier_credit_ge_2(pages):
-    try:
-        page_data = {}
-        list_table = []
-        extracting = False
-        total_amount = None
-        pattern = r'(.+?)\s+(-?\s*\(?[\d,]+\.\d{2}\)?)'
-        pattern_invoice = r'(\d+)\s+([a-z]{2}|\d*)\s+([a-z]{2}|\d{2}-[A-Z]{3}-\d{4})?'
-        key = keyword(credit)
-        for p_idx, page in enumerate(pages):
-            text = page.extract_text().split('\n')
-            for i, line_row in enumerate(text):
-                logger.info("Data PDF: %s", line_row)
-                #invoice
-                try:
-                    if key.invoice_no in line_row:
-                        if i + 1 < len(text):
-                            next_line = text[i + 1].strip()
-                            if next_line:
-                                match = re.search(pattern_invoice, next_line)
-                                if match:   
-                                    page_data['engine_serial_no'] = match.group(1) if match.group(1) else ""
-                                    page_data['invoice_no'] = match.group(2) if match.group(2) and not re.match(r'[a-z]{2}', match.group(2)) else ""
-                                    page_data['invoice_date'] = match.group(3) if match.group(3) and not re.match(r'[a-z]{2}', match.group(3)) else ""
-                except:
-                    page_data['engine_serial_no'] = ""
-                    page_data['invoice_no'] = ""
-                    page_data['invoice_date'] = ""
-                #total credit and currency
-                try:
-                    if key.total_credit in line_row:
-                        extracting = False
-                        total_credit = re.search(r'([A-Z]{3})\s*-\s*([-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?)', line_row)
-                        if total_credit:
-                            currency = total_credit.group(1)
-                            price = total_credit.group(2)
-                            page_data['total_credit'] = to_float(price)
-                            page_data['invoice_currency'] = currency
-                        else : 
-                            page_data['total_credit'] = 0
-                            page_data['invoice_currency'] = 'USD'
-                            #logger.info("Data PDF NEXT LINE: %s", invoice.to_string()) 
-                except: pass
-                #credit note
-                try:
-                    if 'Service credit for' in line_row:
-                        extracting = True
-                        continue
-                    if extracting:
-                        match = re.search(pattern, line_row)
-                        if match:
-                            print(match.group(1))
-                            model =  Details()
-                            description = match.group(1).strip() if match.group(1) else ""
-                            total = to_float(match.group(2).replace('(', '').replace(')', '').replace(' ', '')) if match.group(2) else ""
-                            model.description = description
-                            model.total = total
-                            list_table.append(model.to_dict())
-                except: pass
-                
-                
-        #0.2s
-        page_data['description'] = list_table
-        print(json.dumps(page_data, indent=4))           
-    except Exception as e:
-        logger.error("Error invoice credit: %s", str(e))
-        return None
+
+
+
+# Hàm xử lý số liệu
+def extract_number(e, key):
+    number_credit = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', e)
+    return to_float(number_credit.group(0)) if number_credit else 0
+
+

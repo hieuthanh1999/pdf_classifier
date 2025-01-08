@@ -1,25 +1,39 @@
-python main.py invoice rolls_royce  /Users/hieuthanh/Desktop/OCR/pdf/invoice_rr.pdf
-python main.py credit ge  /Users/hieuthanh/Desktop/OCR/pdf/Credit-GE.pdf
-python main.py repair pratt_whitney_canada /Users/hieuthanh/Desktop/OCR/pdf/repair.pdf
-python main.py invoice celestial /Users/hieuthanh/Desktop/OCR/pdf/celestial.pdf
-python main.py invoice  iae /Users/hieuthanh/Desktop/OCR/pdf/invoice_iae.pdf
-python main.py invoice wills  /Users/hieuthanh/Desktop/OCR/pdf/28.Invoice-Wills.pdf  
-python main.py invoice  pw /Users/hieuthanh/Desktop/OCR/pdf/21.Invoice_PW.PDF
-python main.py invoice  wlfc /Users/hieuthanh/Desktop/OCR/pdf/31.Invoice-WLFC-deposit.pdf
-python main.py invoice smbc pdf/27.Invoice_SMBC.pdf
-python main.py invoice lufthansa pdf/15.Invoice_Lufthansa.pdf
+python main.py invoice rolls_royce pdf/7.Invoice_RR2.pdf
 python main.py invoice klm pdf/8.Invoice_KLM.pdf
+python main.py invoice epcor pdf/10.Invoice_Epcor2.pdf
 python main.py invoice epcor pdf/11.Invoice_Epcor1.pdf
-python main.py invoice epcor_2 pdf/Invoice_Epcor.pdf
+python main.py invoice ameco pdf/12.Invoice_Ameco2.PDF
+python main.py invoice ameco pdf/13.Invoice_Ameco3.pdf
+python main.py invoice lufthansa pdf/15.Invoice_Lufthansa.pdf
+python main.py invoice pw pdf/16.Invoice_PW.pdf
 python main.py invoice stand_aero pdf/17.Invoice_StandAero.pdf
-python main.py invoice ameco_3 pdf/13.Invoice_Ameco3.pdf
-python main.py credit stand_aero pdf/Credit-StandardAero.pdf
-python main.py invoice iae_2 pdf/9.Invoice_IAE2.pdf
+python main.py invoice celestial pdf/18.Invoice_Celestial.pdf
+python main.py invoice iae pdf/19.Invoice_IAE.pdf
+python main.py invoice peregrin pdf/20.Invoice_Peregrin.pdf
+python main.py invoice pw pdf/21.Invoice_PW.pdf
+python main.py invoice rolls_royce pdf/22.Invoice_RRRF.pdf
+python main.py invoice rolls_royce pdf/23.Invoice_RRRF2.pdf
 python main.py invoice  stengineering pdf/24.Invoice_STEngineering.pdf
 python main.py invoice aercap pdf/26.Invoice_AerCap.pdf
-python main.py deposit rolls_royce pdf/29.Invoice-RR-deposit.pdf
-python main.py invoice honey_well pdf/14.Invoice_Honeywell.pdf
-python main.py lc mtu pdf/LC-MTU.pdf 
-python main.py lc ameco pdf/LCAmeco.pdf
-python main.py lc ge pdf/LC_GE.pdf
-python main.py credit ge_2 pdf/Credit\ -\ GE\ 2.pdf
+python main.py invoice smbc pdf/27.Invoice_SMBC.pdf
+python main.py invoice wills  pdf/28.Invoice-Wills.pdf
+python main.py invoice rolls_royce pdf/29.Invoice-RR-deposit.pdf
+python main.py invoice celestial pdf/30.Invoice-Celestial-deposit.pdf
+python main.py invoice wlfc pdf/31.Invoice-WLFC-deposit.pdf
+python main.py credit  stand_aero pdf/Credit-ATR.pdf
+python main.py credit ge pdf/Credit-GE.pdf
+python main.py credit ge pdf/Credit-GE2.pdf
+python main.py credit iae pdf/Credit-IAE.pdf
+python main.py credit mtu pdf/Credit-MTU.pdf
+python main.py credit  stand_aero pdf/Credit-StandardAero.pdf
+python main.py credit rolls_royce pdf/CreditRR.pdf
+
+kiểm tra lại data:
+9.Invoice_IAE2.pdf
+14.Invoice_Honeywell.pdf
+25.Invoice_AerCap.pdf
+Credit-KLM.pdf
+Credit-PW.pdf
+LC_GE.pdf
+LCAmeco.pdf
+LC-MTU

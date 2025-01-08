@@ -15,6 +15,7 @@ import pandas as pd
 @time_execution
 def classifier_invoice_wlfc(pages):
     try:
+        logger.info("%s", 'classifier_invoice_wlfc')
         total_amount_regex = r"Total Amount Due \([A-Za-z]{3}\):\s*(\d{1,3}(?:,\d{3})*\.\d{2})"
         regex = r"([A-Za-z\s]+)\s+(Upon\sreceipt|\d{1,2}\s+[A-Za-z]+\s+\d{1,2},\s+\d{4})\s+([A-Za-z]{3})\s+([\d,]+\.\d{2})"
         page_data = {}
@@ -28,29 +29,29 @@ def classifier_invoice_wlfc(pages):
                         match = re.search(r"Invoice No:\s*(.*)", line)
                         if match:
                             page_data['invoice_no'] = match.group(1).strip()
-                    except: 
+                    except:
                         page_data['invoice_no'] = ''
 
-                elif "Invoice Date" in line: 
+                elif "Invoice Date" in line:
                     try:
                         match = re.search(r"Invoice Date:\s*(.*)", line)
                         if match:
                             page_data['invoice_date'] = match.group(1).strip()
-                    except: 
+                    except:
                         page_data['invoice_date'] = ''
                 elif "Engine Model" in line:
                     try:
                         match = re.search(r"Engine Model:\s*(.*)", line)
                         if match:
                             page_data['engine_model'] = match.group(1).strip()
-                    except: 
+                    except:
                         page_data['engine_model'] = ''
                 elif "Serial Number" in line:
                     try:
                         match = re.search(r"Serial Number:\s*(.*)", line)
                         if match:
                             page_data['serial_number'] = match.group(1).strip()
-                    except: 
+                    except:
                         page_data['serial_number'] = ''
 
                 else:
@@ -63,7 +64,7 @@ def classifier_invoice_wlfc(pages):
                             detail.description = item_match.group(1).strip()
                         except:
                             detail.description = ""
-                        
+
                         try:
                             detail.payment_due_date = item_match.group(2).strip()
                         except:

@@ -19,7 +19,7 @@ def classifier_credit_stand_aero(pages):
         page_data = {}
         list_table = []
         key = keyword(stand_aero)
-        extracting = True 
+        extracting = True
         pattern = r"(.+?)\s*\$\s*\(?(-?\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\)?"
         for p_idx, page in enumerate(pages):
             text = page.extract_text().split('\n')
@@ -27,7 +27,6 @@ def classifier_credit_stand_aero(pages):
                 line_row = line_row.strip()
                 # print(line_row)
                 if key.invoice_number in line_row:
-                    print(line_row)
                     match = re.search(r'Invoice\s*#\s*:\s*([\w-]+)', line_row)
                     if match:
                         page_data[key.invoice_number] = match.group(1)
@@ -43,12 +42,11 @@ def classifier_credit_stand_aero(pages):
                 if extracting:
                     match = re.search(pattern, line_row)
                     if match:
-                        print(match.groups())
                         model = Details()
                         model.description = match.group(1)
                         model.total = to_float(match.group(2))
                         list_table.append(model.to_dict())
-                
+
                 if key.shipping in line_row:
                     page_data[key.shipping] = extract_value(line_row, key.shipping)
                 if key.TOTAL in line_row and 'USD' in line_row:
@@ -57,7 +55,7 @@ def classifier_credit_stand_aero(pages):
         print(json.dumps(page_data, indent=4))
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
-        return None           
+        return None
 
 @time_execution
 def classifier_invoice_stand_aero(pages):
@@ -147,7 +145,7 @@ def classifier_invoice_stand_aero(pages):
                             if match:
                                 list_table_description[service_name + 'Actual'] = to_float(match.group(4))
                                 list_table_description[match.group(1)] = to_float(match.group(2).replace('%', ''))
-                                list_table_description[service_name + 'Minus'] = to_float(match.group(3))    
+                                list_table_description[service_name + 'Minus'] = to_float(match.group(3))
                 if 'ROTABLE / SPECIAL PROCESS' in line_row:
                     rotable_special_process = True
                 if rotable_special_process:
@@ -158,9 +156,9 @@ def classifier_invoice_stand_aero(pages):
                         match = re.search(regex_rotable_special_process, line_row)
                         if match:
                             model = Details()
-                            model.part_number = match.group(1) if match.group(1) else ""
-                            model.description = match.group(2) if match.group(2) else ""
-                            model.total = to_float(match.group(3)) if match.group(3) else ""
+                            model.part_number = match.group(1)
+                            model.description = match.group(2)
+                            model.total = to_float(match.group(3))
                             model.reference = match.group(4)
                             list_table_rotable_special_process.append(model.to_dict())
                 if 'NEW PARTS' in line_row:
@@ -173,11 +171,11 @@ def classifier_invoice_stand_aero(pages):
                         match = re.search(regex_new_parts, line_row)
                         if match:
                             model = Details()
-                            model.part_number = match.group(1) if match.group(1) else ""
-                            model.description = match.group(2) if match.group(2) else ""
-                            model.quantity = to_int(match.group(3)) if match.group(3) else ""
-                            model.list = to_float(match.group(4)) if match.group(4) else ""
-                            model.total = to_float(match.group(5)) if match.group(5) else ""
+                            model.part_number = match.group(1)
+                            model.description = match.group(2)
+                            model.quantity = to_int(match.group(3))
+                            model.list = to_float(match.group(4))
+                            model.total = to_float(match.group(5))
                             list_table_new_parts.append(model.to_dict())
                 if 'NEW LCF PARTS' in line_row:
                     new_lcf_parts = True
@@ -189,20 +187,17 @@ def classifier_invoice_stand_aero(pages):
                         match = re.search(regex_new_parts, line_row)
                         if match:
                             model = Details()
-                            model.part_number = match.group(1) if match.group(1) else ""
-                            model.description = match.group(2) if match.group(2) else ""
-                            model.quantity = to_int(match.group(3)) if match.group(3) else ""
-                            model.list = to_float(match.group(4)) if match.group(4) else ""
-                            model.total = to_float(match.group(5)) if match.group(5) else ""
+                            model.part_number = match.group(1)
+                            model.description = match.group(2)
+                            model.quantity = to_int(match.group(3))
+                            model.list = to_float(match.group(4))
+                            model.total = to_float(match.group(5))
                             list_table_new_lcf_parts.append(model.to_dict())
                             match = re.search(r'([A-Za-z\s]+)\s+(\d{1,3}(?:\.\d+)?%)\s+-\s+(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)', text[i+1])
                             if match:
                                 model.discount_percent = to_float(match.group(2).replace('%', ''))
                                 model.discount_description = match.group(1)
                                 model.total = to_float(match.group(3))
-                            else:
-                                model.discount_percent = 0
-                                model.discount_description = ''
                             list_table_new_lcf_parts.append(model.to_dict())
                 if 'SERVICEABLE PARTS' in line_row:
                     serviceable_parts = True
@@ -214,11 +209,11 @@ def classifier_invoice_stand_aero(pages):
                         match = re.search(regex_new_parts, line_row)
                         if match:
                             model = Details()
-                            model.part_number = match.group(1) if match.group(1) else ""
-                            model.description = match.group(2) if match.group(2) else ""
-                            model.quantity = to_int(match.group(3)) if match.group(3) else ""
-                            model.list = to_float(match.group(4)) if match.group(4) else ""
-                            model.total = to_float(match.group(5)) if match.group(5) else ""
+                            model.part_number = match.group(1)
+                            model.description = match.group(2)
+                            model.quantity = to_int(match.group(3))
+                            model.list = to_float(match.group(4))
+                            model.total = to_float(match.group(5))
                             list_serviceable_parts.append(model.to_dict())
                 if 'SERVICEABLE LCF PARTS' in line_row:
                     serviceable_lcf_parts = True
@@ -230,11 +225,11 @@ def classifier_invoice_stand_aero(pages):
                         match = re.search(regex_new_parts, line_row)
                         if match:
                             model = Details()
-                            model.part_number = match.group(1) if match.group(1) else ""
-                            model.description = match.group(2) if match.group(2) else ""
-                            model.quantity = to_int(match.group(3)) if match.group(3) else ""
-                            model.list = to_float(match.group(4)) if match.group(4) else ""
-                            model.total = to_float(match.group(5)) if match.group(5) else ""
+                            model.part_number = match.group(1)
+                            model.description = match.group(2)
+                            model.quantity = to_int(match.group(3))
+                            model.list = to_float(match.group(4))
+                            model.total = to_float(match.group(5))
                             list_serviceable_lcf_parts.append(model.to_dict())
                 if 'SPECIALLY PRICED SERVICEABLE PARTS' in line_row:
                     specially_priced_serviceable_parts = True
@@ -246,11 +241,11 @@ def classifier_invoice_stand_aero(pages):
                         match = re.search(regex_new_parts, line_row)
                         if match:
                             model = Details()
-                            model.part_number = match.group(1) if match.group(1) else ""
-                            model.description = match.group(2) if match.group(2) else ""
-                            model.quantity = to_int(match.group(3)) if match.group(3) else ""
-                            model.list = to_float(match.group(4)) if match.group(4) else ""
-                            model.total = to_float(match.group(5)) if match.group(5) else ""
+                            model.part_number = match.group(1)
+                            model.description = match.group(2)
+                            model.quantity = to_int(match.group(3))
+                            model.list = to_float(match.group(4))
+                            model.total = to_float(match.group(5))
                             list_specially_priced_serviceable_parts.append(model.to_dict())
                 if 'COMPONENT REPAIR' in line_row:
                     components_repair = True
@@ -262,10 +257,10 @@ def classifier_invoice_stand_aero(pages):
                         match = re.search(regex_componet_repair, line_row)
                         if match:
                             model = Details()
-                            model.part_number = match.group(1) if match.group(1) else ""
-                            model.description = match.group(2) if match.group(2) else ""
-                            model.quantity = to_int(match.group(3)) if match.group(3) else ""
-                            model.total = to_float(match.group(4)) if match.group(4) else ""
+                            model.part_number = match.group(1)
+                            model.description = match.group(2)
+                            model.quantity = to_int(match.group(3))
+                            model.total = to_float(match.group(4))
                             list_table_components_repair.append(model.to_dict())
                 if 'PARTS WITH PRATT & WHITNEY COMMERCIAL SUPPORT PROGRAMS' in line_row:
                     pwc_commercial_support = True
@@ -293,15 +288,15 @@ def classifier_invoice_stand_aero(pages):
                                     match = re.search(regex_pwc, line_row)
                                     if match:
                                         csp_detail = Details()
-                                        csp_detail.part_number = match.group(1) if match.group(1) else ""
-                                        csp_detail.description = match.group(2) if match.group(2) else ""
-                                        csp_detail.quantity = to_int(match.group(3)) if match.group(3) else ""
-                                        csp_detail.list = to_float(match.group(4)) if match.group(4) else ""
-                                        csp_detail.total_type = to_float(match.group(5)) if match.group(5) else ""
-                                        csp_detail.total = to_float(match.group(6)) if match.group(6) else ""
+                                        csp_detail.part_number = match.group(1)
+                                        csp_detail.description = match.group(2)
+                                        csp_detail.quantity = to_int(match.group(3))
+                                        csp_detail.list = to_float(match.group(4))
+                                        csp_detail.total_type = to_float(match.group(5))
+                                        csp_detail.total = to_float(match.group(6))
                                         list_table_csp.append(csp_detail.to_dict())
                 logger.info("%s", line_row)
-        page_data['sumary'] = list_table_description   
+        page_data['sumary'] = list_table_description
         page_data['rotable_special_process'] = list_table_rotable_special_process
         page_data['new_parts'] = list_table_new_parts
         page_data['new_lcf_parts'] = list_table_new_lcf_parts

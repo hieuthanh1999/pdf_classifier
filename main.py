@@ -30,7 +30,7 @@ pytesseract.pytesseract.tesseract_cmd = tesseract_path
 def extract_data(type_invoice, code, file_path):
     """
     Hàm này trích xuất dữ liệu từ file PDF dựa trên loại hóa đơn và mã hóa.
-    
+
     Parameters:
         type_invoice (str): Loại hóa đơn cần xử lý.
         code (str): Mã hóa đại diện cho nhà cung cấp.
@@ -41,7 +41,7 @@ def extract_data(type_invoice, code, file_path):
         if type_invoice == TypeInvoice.LC.value and code == Code.GE.value:
             classifier_invoice_lc_ge(file_path)
         with pdfplumber.open(file_path) as pdf:
-            
+
             if type_invoice == TypeInvoice.CREDIT.value and code == Code.GE.value:
                 classifier_invoice_credit(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.WILLS.value:
@@ -52,19 +52,23 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_pw(pdf.pages)
             if type_invoice == TypeInvoice.LC.value and code == Code.MTU.value:
                 classifier_lc_mtu_invoice(file_path, poppler_path, pytesseract)
-            if type_invoice == TypeInvoice.REPAIR.value and code == Code.PRATT_WHITNEY_CANADA.value:
-                classifier_repair_invoice(pdf.pages)
+            if type_invoice == TypeInvoice.CREDIT.value and code == Code.MTU.value:
+                classifier_credit_mtu_invoice(pdf.pages)
+            # if type_invoice == TypeInvoice.INVOICE.value and code == Code.PRATT_WHITNEY_CANADA.value:
+            #     classifier_repair_invoice(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.HONEY_WELL.value:
-                classifier_honey_well_invoice(pdf.pages)   
+                classifier_honey_well_invoice(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.ROLLS_ROYCE.value:
-                classifier_invoice_rolls_royce(pdf.pages)
-            if type_invoice == TypeInvoice.REPAIR.value and code == Code.ROLLS_ROYCE.value:
+                classifier_invoice_deposit_rolls_royce(pdf.pages)
+            if type_invoice == TypeInvoice.CREDIT.value and code == Code.ROLLS_ROYCE.value:
                 classifier_invoice_credit_rolls_royce(pdf.pages)
-            if type_invoice == TypeInvoice.INVOICE.value and code == Code.AMECO.value:
-                classifier_invoice_ameco(pdf.pages)
+            # if type_invoice == TypeInvoice.INVOICE.value and code == Code.AMECO.value:
+            #     classifier_invoice_ameco(pdf.pages)
             if type_invoice == TypeInvoice.LC.value and code == Code.AMECO.value:
                 classifier_invoice_lc_ameco(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.CELESTIAL.value:
+                classifier_invoice_celestial(pdf.pages)
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.PEREGRIN.value:
                 classifier_invoice_celestial(pdf.pages)
             if type_invoice == 'invoice_epcor':
                 classifier_invoice_epcor(pdf.pages)
@@ -72,7 +76,7 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_iae(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.STAND_AERO.value:
                 classifier_invoice_stand_aero(pdf.pages)
-            if type_invoice == TypeInvoice.INVOICE.value and code == Code.AMECO_3.value:
+            if type_invoice == TypeInvoice.INVOICE.value and code == Code.AMECO.value:
                 classifier_invoice_ameco_3(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.EPCOR.value:
                 classifier_invoice_epcor(pdf.pages)
@@ -80,26 +84,22 @@ def extract_data(type_invoice, code, file_path):
                 classifier_invoice_smbc(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.KLM.value:
                 classifier_invoice_klm(pdf.pages)
+            if type_invoice == TypeInvoice.CREDIT.value and code == Code.KLM.value:
+                classifier_invoice_klm(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.EPCOR_2.value:
                 classifier_invoice_epcor_2(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.LUFTHANSA.value:
                 classifier_invoice_lufthansa(pdf.pages)
             if type_invoice == TypeInvoice.CREDIT.value and code == Code.STAND_AERO.value:
-                    classifier_credit_stand_aero(pdf.pages)
-            if type_invoice == TypeInvoice.INVOICE.value and code == Code.IAE_2.value:
-                classifier_invoice_iae_2(pdf.pages)
+                classifier_credit_stand_aero(pdf.pages)
+            if type_invoice == TypeInvoice.CREDIT.value and code == Code.IAE.value:
+                classifier_credit_iae(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.STENGINEERING.value:
                 classifier_invoice_stengineering(pdf.pages)
             if type_invoice == TypeInvoice.INVOICE.value and code == Code.AERCAP.value:
-                classifier_invoice_aercap(pdf.pages)
-            if type_invoice == TypeInvoice.DEPOSIT.value and code == Code.ROLLS_ROYCE.value:
-                classifier_invoice_deposit_rolls_royce(pdf.pages)
-            if type_invoice == TypeInvoice.LC.value and code == Code.AMECO.value:
-                classifier_lc_ameco(file_path, poppler_path, pytesseract)
-            if type_invoice == TypeInvoice.LC.value and code == Code.GE.value:
-                classifier_invoice_lc_ge(file_path, poppler_path, pytesseract)
-            if type_invoice == TypeInvoice.CREDIT.value and code == Code.GE_2.value:
-                classifier_credit_ge_2(pdf.pages)
+                classifier_invoice_aercap(pdf.pages, file_path, poppler_path, pytesseract)
+            # if type_invoice == TypeInvoice.DEPOSIT.value and code == Code.ROLLS_ROYCE.value:
+            #     classifier_invoice_deposit_rolls_royce(pdf.pages)
         pdf.close()
     except IOError as e:
         print({"error": "Không thể mở tập tin " + str(e)})

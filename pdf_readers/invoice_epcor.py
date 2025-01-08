@@ -27,43 +27,43 @@ def classifier_invoice_epcor(pages):
                         match = re.search(r"Invoice #:\s*(.*)", line)
                         if match:
                             page_data['invoice_no'] = match.group(1).strip()
-                    except: 
+                    except:
                         page_data['invoice_no'] = ''
 
-                elif "Invoice Date" in line: 
+                elif "Invoice Date" in line:
                     try:
                         match = re.search(r"Invoice Date:\s*(.*)", line)
                         if match:
                             page_data['invoice_date'] = match.group(1).strip()
-                    except: 
+                    except:
                         page_data['invoice_date'] = ''
                 elif "Customer Reference #:" in line:
                     try:
                         match = re.search(r"Customer Reference #:\s*(.*)", line)
                         if match:
                             page_data['customer_reference'] = match.group(1).strip()
-                    except: 
+                    except:
                         page_data['customer_reference'] = ''
                 elif "Work Order #:" in line:
                     try:
                         match = re.search(r"Work Order #:\s*(.*)", line)
                         if match:
                             page_data['work_order'] = match.group(1).strip()
-                    except: 
+                    except:
                         page_data['serial_number'] = ''
                 elif "Net amount" in line:
                     try:
                         match = re.search(r"Net amount\s*(\d{1,3}(?:,\d{3})*\.\d{2})", line)
                         if match:
                             page_data['net_amount'] = to_float(match.group(1).strip())
-                    except: 
+                    except:
                         page_data['net_amount'] = 0
                 elif "Total amount" in line:
                     try:
                         match = re.search(r'Total amount incl\. VAT (\d{1,3}(?:,\d{3})*(?:\.\d{2})?) USD', line)
                         if match:
                             page_data['total_amount'] = to_float(match.group(1).strip())
-                    except: 
+                    except:
                         page_data['total_amount'] = 0
                 elif "VAT" in line:
                     try:
@@ -71,7 +71,7 @@ def classifier_invoice_epcor(pages):
                         if match:
                             page_data['vat_percent'] = to_float(match.group(1).strip())
                             page_data['vat'] = to_float(match.group(2).strip())
-                    except: 
+                    except:
                         page_data['vat'] = 0
                         page_data['vat_percent'] = 0
                 else:
@@ -79,29 +79,31 @@ def classifier_invoice_epcor(pages):
                     if match:
                         detail = Details()
                         try:
-                            detail.category = match.group(1).strip() if match.group(1) else ''
+                            detail.category = match.group(1).strip()
                         except:
                             detail.category = ''
                         try:
-                            detail.description = match.group(2).strip() if match.group(2) else ''
+                            detail.description = match.group(2).strip()
                         except:
                             detail.description = ''
                         try:
-                            detail.quantity =to_float(match.group(3).strip()) if match.group(3) else ''
+                            detail.quantity =to_float(match.group(3).strip())
                         except:
                             detail.quantity = 0
                         try:
-                            detail.unit_price = to_float(match.group(4).strip()) if match.group(4) else ''
+                            detail.unit_price = to_float(match.group(4).strip())
                         except:
                             detail.unit_price = 0
                         try:
-                            detail.total_price = to_float(match.group(5).strip()) if match.group(5) else ''
+                            detail.total_price = to_float(match.group(5).strip())
                         except:
                             detail.total_price = 0
                         list_table.append(detail.to_dict())
             page_data['table'] = list_table
 
-        # write_json_to_file(page_data)    
+        # write_json_to_file(page_data)
+        if "invoice_no" not in page_data or not page_data["invoice_no"]:
+            return classifier_invoice_epcor_2(pages)
         print(json.dumps(page_data, indent=4))
     except Exception as e:
         print(f"Error: {e}")
@@ -126,22 +128,22 @@ def classifier_invoice_epcor_2(pages):
                         match = re.search(r"EPCOR Order #: \s*(.*)", line)
                         if match:
                             page_data['epcor_order'] = match.group(1).strip()
-                    except: 
+                    except:
                         page_data['epcor_order'] = ''
 
-                elif "Date Quote" in line: 
+                elif "Date Quote" in line:
                     try:
                         match = re.search(r"Date Quote:\s*(.*)", line)
                         if match:
                             page_data['date_quote'] = match.group(1).strip()
-                    except: 
+                    except:
                         page_data['date_quote'] = ''
                 elif "Customer reference" in line:
                     try:
                         match = re.search(r"Customer reference:\s*(.*)", line)
                         if match:
                             page_data['customer_reference'] = match.group(1).strip()
-                    except: 
+                    except:
                         page_data['customer_reference'] = ''
                 elif "Repair price" in line:
                     try:
@@ -226,8 +228,8 @@ def classifier_invoice_epcor_2(pages):
             page_data['table_power_section'] = list_table_power_section
             page_data['table_gearbox'] = list_table_gearbox
             page_data['table_nte_exclusions'] = list_table_nte_exclusions
-        # write_json_to_file(page_data)   
-        print(json.dumps(page_data, indent=4)) 
+        #write_json_to_file(page_data)
+        print(json.dumps(page_data, indent=4))
     except Exception as e:
         print(f"Error: {e}")
         return None
@@ -235,14 +237,14 @@ def classifier_invoice_epcor_2(pages):
 def put_data(match):
     try:
         model = Details()
-        model.part_number = match.group(1) if match.group(1) else ""
-        model.description = remove_duplicate_characters(match.group(2)) if match.group(2) else ""
-        model.quantity = to_int(match.group(3)) if match.group(3) else ""
-        model.category = match.group(4) if match.group(4) else ""
-        model.costea = to_float(match.group(5)) if match.group(5) else ""
-        model.total_cost_estimate = to_float(match.group(6)) if match.group(6) else ""
-        model.comment = match.group(7) if match.group(7) else ""
+        model.part_number = match.group(1)
+        model.description = remove_duplicate_characters(match.group(2))
+        model.quantity = to_int(match.group(3))
+        model.category = match.group(4)
+        model.costea = to_float(match.group(5))
+        model.total_cost_estimate = to_float(match.group(6))
+        model.comment = match.group(7)
         return model.to_dict()
     except Exception as e:
         print(f"Error: {e}")
-        return None   
+        return None

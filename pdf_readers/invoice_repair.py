@@ -27,7 +27,7 @@ def classifier_repair_invoice(pages):
         for p_idx, page in enumerate(pages):
             text = page.extract_text().split('\n')
             page_name = ''
-            table_data = [] 
+            table_data = []
             details = {}
             for i, e in enumerate(text):
                 """
@@ -36,7 +36,7 @@ def classifier_repair_invoice(pages):
                 summary_of_charges = False
                 try:
                     if key.summary_of_charges in e:
-                        summary_of_charges = True 
+                        summary_of_charges = True
                         page_name = 'summary_of_charges'
                         #logger.info("Repair: %s", e)
                     pass
@@ -45,7 +45,7 @@ def classifier_repair_invoice(pages):
                 if summary_of_charges:
                     #logger.info("Full content of page %d:", p_idx)
                     for i, line in enumerate(text):
-                       
+
                         if key.summary_of_charges_total in line:
                             match = re.search(r'[-+]?\d{1,3}(?:,\d{3})*(?:\.\d+)?', line)
                             if match:
@@ -82,9 +82,9 @@ def classifier_repair_invoice(pages):
                             if next_line:
                                 details[key.summary_of_charges_total_all] = to_float(next_line)
                             else : details[key.summary_of_charges_total_all] = 0
-                        
-                   
-                            #details['summary_of_charges_total'] = 
+
+
+                            #details['summary_of_charges_total'] =
 
                 """
                 Summary of charges
@@ -92,7 +92,7 @@ def classifier_repair_invoice(pages):
                 warranty_summary = False
                 try:
                     if key.warranty_summary in e:
-                        warranty_summary = True 
+                        warranty_summary = True
                         page_name = 'warranty_summary'
                     pass
                 except: pass
@@ -111,7 +111,7 @@ def classifier_repair_invoice(pages):
                 labour_summary = False
                 try:
                     if key.labour_summary in e:
-                        labour_summary = True 
+                        labour_summary = True
                         page_name = 'labour_summary'
                     pass
                 except: pass
@@ -150,14 +150,14 @@ def classifier_repair_invoice(pages):
                                 data_page_labour_summary.append(model.to_dict())
                                 #logger.info("%s", details.to_string())
                     details['table'] = data_page_labour_summary
-                
+
                 """
                 new material summary
                 """
                 new_material_summary = False
                 try:
                     if key.new_material_summary in e:
-                        new_material_summary = True 
+                        new_material_summary = True
                         page_name = 'new_material_summary'
                     pass
                 except: pass
@@ -176,7 +176,7 @@ def classifier_repair_invoice(pages):
                             match = re.match(pattern, line)
                             if match:
                                 material = match.group(1)
-                                description = match.group(2) 
+                                description = match.group(2)
                                 reason_for_memoval = match.group(3)
                                 unit_price = to_float(match.group(4))
                                 qty = to_float(match.group(5))
@@ -197,7 +197,7 @@ def classifier_repair_invoice(pages):
                                 model.total = total
                                 model.currency = currency
                                 data_page_new_material.append(model.to_dict())
-                      
+
                     details['table'] = data_page_new_material
 
                 """
@@ -206,14 +206,14 @@ def classifier_repair_invoice(pages):
                 campaign_material_summary = False
                 try:
                     if key.campaign_material_summary in e:
-                        campaign_material_summary = True 
+                        campaign_material_summary = True
                         page_name = 'campaign_material_summary'
                     pass
                 except: pass
                 campaign_summary_material = False
                 if campaign_material_summary:
                     for line in text:
-                        
+
                         if "Next Page" in line:
                             break
                         if key.labour_summary_material in line:
@@ -224,9 +224,9 @@ def classifier_repair_invoice(pages):
                             pattern = r'(\d+)\s+([\d,.]+)\s+([\d,.]+)\s+([\d,.]+)\s+([\d,.]+-?)\s+([\d,.]+)\s+([\d,.]+)\s+(\w+)'
                             match = re.match(pattern, line.strip())
                             if match:
-                                
+
                                 material = match.group(1)
-                                
+
                                 unit_price = to_float(match.group(2))
                                 qty = to_float(match.group(3))
                                 extended_list = to_float(match.group(4))
@@ -234,7 +234,7 @@ def classifier_repair_invoice(pages):
                                 sub_total = to_float(match.group(6))
                                 total = to_float(match.group(7))
                                 currency = match.group(8)
-                                
+
                                 model.material = material
                                 model.unit_price = unit_price
                                 model.qty = qty
@@ -253,14 +253,14 @@ def classifier_repair_invoice(pages):
                 component_repair_flat_rate_summary = False
                 try:
                     if key.component_repair_flat_rate_summary in e:
-                        component_repair_flat_rate_summary = True 
+                        component_repair_flat_rate_summary = True
                         page_name = 'component_repair_flat_rate_summary'
                     pass
                 except: pass
                 campaign_summary_material = False
                 if component_repair_flat_rate_summary:
                     for line in text:
-                        
+
                         if "Next Page" in line:
                             break
                         if key.labour_summary_material in line:
@@ -273,9 +273,9 @@ def classifier_repair_invoice(pages):
                             match = re.match(pattern, line.strip())
 
                             if match:
-                              
+
                                 material = match.group(1)
-                               
+
                                 # logger.info("%s", repair_level)
                                 description = match.group(2)
                                 repair_level = match.group(3)
@@ -292,7 +292,7 @@ def classifier_repair_invoice(pages):
                                 model.unit_price = unit_price
                                 model.qty = qty
                                 model.extended_list = extended_list
-                    
+
                                 model.sub_total = sub_total
                                 model.total = total
                                 model.currency = currency
@@ -306,7 +306,7 @@ def classifier_repair_invoice(pages):
                 other_summary = False
                 try:
                     if key.other_summary in e:
-                        other_summary = True 
+                        other_summary = True
                         page_name = 'other_summary'
                     pass
                 except: pass
@@ -346,12 +346,12 @@ def classifier_repair_invoice(pages):
                                 #logger.info("%s", model.to_dict())
                     details['table'] = data_page_other_summary
             if page_name:
-                page_data[page_name] = details 
+                page_data[page_name] = details
         #write_json_to_file(page_data)
         # with open('output/output.json', 'w', encoding='utf-8') as file:
         #     json.dump(page_data, file, ensure_ascii=False, indent=4)
         print(json.dumps(page_data, indent=4))
-        #print(page_data)           
+        #print(page_data)
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None

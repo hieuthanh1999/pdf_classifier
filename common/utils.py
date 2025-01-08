@@ -21,10 +21,10 @@ def keyword(type):
 def to_string(value):
     """
     Chuyển đổi giá trị thành chuỗi, loại bỏ khoảng trắng ở đầu và cuối.
-    
+
     Args:
         value: Giá trị cần chuyển đổi (có thể là bất kỳ kiểu dữ liệu nào).
-    
+
     Returns:
         str: Chuỗi đã được chuyển đổi và loại bỏ khoảng trắng.
               Trả về chuỗi rỗng nếu có lỗi xảy ra.
@@ -46,7 +46,7 @@ def to_float_regex(value):
         float: Giá trị số thực sau khi chuyển đổi. Nếu chuyển đổi thất bại, trả về 0.0.
     """
     value = re.sub(r'[^-\d.]', '', value)
-    
+
     try:
         return float(value)
     except ValueError:
@@ -56,10 +56,10 @@ def to_float_regex(value):
 def to_int(value):
     """
     Chuyển đổi giá trị thành số nguyên (int), loại bỏ dấu '-' ở cuối nếu có.
-    
+
     Args:
         value: Chuỗi đại diện cho số (có thể chứa dấu phẩy và dấu '-').
-    
+
     Returns:
         int: Giá trị số nguyên đã được chuyển đổi.
              Trả về 0 nếu có lỗi xảy ra.
@@ -70,7 +70,7 @@ def to_int(value):
         return int(value.replace(',', ''))
     except (ValueError, TypeError):
         return 0
-    
+
 def to_percentage(value):
     """
     Chuyển đổi giá trị phần trăm thành số thực (float), loại bỏ ký hiệu '%' nếu có.
@@ -87,25 +87,25 @@ def to_percentage(value):
         return float(value.replace(',', '')) / 100
     except (ValueError, TypeError):
         return 0.0
- 
+
 def to_float(value):
     """
     Chuyển đổi giá trị thành số thực (float), loại bỏ dấu '-' ở cuối nếu có.
-    
+
     Args:
         value: Chuỗi đại diện cho số (có thể chứa dấu phẩy và dấu '-').
-    
+
     Returns:
         float: Giá trị số thực đã được chuyển đổi.
                Trả về 0.0 nếu có lỗi xảy ra.
     """
     try:
         if value.endswith('-'):
-            value = value[:-1] 
+            value = value[:-1]
         return float(value.replace(',', ''))
     except (ValueError, TypeError):
-        return 0.0 
-    
+        return 0.0
+
 
 def write_json_to_file(data, file_path = 'output/output.json'):
     """

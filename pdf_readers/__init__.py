@@ -1,8 +1,8 @@
-from .invoice_credit import classifier_invoice_credit, classifier_invoice_lc_ge, classifier_credit_ge_2
+from .invoice_credit import classifier_invoice_credit, classifier_invoice_lc_ge
 from .invoice_repair import classifier_repair_invoice
 from .invoice_honey_well import classifier_honey_well_invoice
 from .invoice_rolls_royce import classifier_invoice_rolls_royce,classifier_invoice_credit_rolls_royce, classifier_invoice_deposit_rolls_royce
-from .invoice_ameco import classifier_invoice_ameco, classifier_invoice_lc_ameco, classifier_invoice_ameco_3, classifier_lc_ameco
+from .invoice_ameco import classifier_invoice_ameco, classifier_invoice_lc_ameco, classifier_invoice_ameco_3
 from .invoice_celestial import classifier_invoice_celestial
 from .invoice_iae import classifier_invoice_iae, classifier_invoice_iae_2
 from .invoice_stand_aero import classifier_invoice_stand_aero, classifier_credit_stand_aero
@@ -16,5 +16,6 @@ from .invoice_klm import classifier_invoice_klm
 from .invoice_lufthansa import classifier_invoice_lufthansa
 from .invoice_stengineering import classifier_invoice_stengineering
 from .invoice_aercap import classifier_invoice_aercap
-
+from .invoice_iae import classifier_credit_iae
+from .invoice_mtu import classifier_credit_mtu_invoice
 

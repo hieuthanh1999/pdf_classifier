@@ -11,71 +11,6 @@ import time
 from common import *
 from pdf_readers import *
 import pandas as pd
-from pdf_readers import *
-import pandas as pd
-from pdf2image import convert_from_path
-
-@time_execution
-def classifier_lc_ameco(path, poppler_path, pytesseract):
-    try:
-        key = keyword(lc_mtu)
-        pages = convert_from_path(path, poppler_path=poppler_path)
-        inv = dict()
-        custom_config = r'-l eng -c tessedit_char_whitelist' \
-                        r'="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-:., " '
-        custom_config += r'--psm 6'
-        page_data = {}
-        dict_total = {}
-        list_table = []
-        extracting = False
-        total_amount = None
-        for p_idx, page in enumerate(pages):
-            text = pytesseract.image_to_string(page, config=custom_config)
-            # for i, text in enumerate(data):
-            #     logger.info("data: %s", str(text))
-            for i, line_row in enumerate(text.split('\n')):
-                line_row = line_row.strip()
-
-                if 'Description Amount' in line_row:
-                    extracting = True
-                    continue
-                if 'Total amount' in line_row:
-                    logger.info("%s", line_row)
-                    extracting = False
-                    total_pattern = r'Total amount[:\uFF1A]?\s([\d,]+\.\d{2})\s(USD|EUR|GBP|JPY|CNY)'
-
-                    total_match = re.search(total_pattern, line_row)
-                    if total_match:
-                        total_amount = to_float(total_match.group(1)) if total_match.group(1) else ""
-                        currency = total_match.group(2) if total_match.group(2) else ""
-                        dict_total['amount'] = total_amount
-                        dict_total['currency'] = currency
-                        page_data['total_amount'] = dict_total
-                    break
-                if extracting:
-                    charge_pattern = r'(.+?)\s([\d,]+\.\d{2})\s(USD|EUR|GBP|JPY|CNY)'
-                    charge_match = re.search(charge_pattern, line_row)
-                    if charge_match:
-                        print(charge_match.groups())
-                        
-                        model =  Details()
-                        description = charge_match.group(1).strip() if charge_match.group(1) else ""
-                        total = to_float(charge_match.group(2)) if charge_match.group(2) else ""
-                        currency = charge_match.group(3) if charge_match.group(3) else ""
-
-                        model.description = description
-                        model.total = total
-                        model.currency = currency
-                        
-                        list_table.append(model.to_dict())
-        page_data['description'] = list_table
-
-        print(json.dumps(page_data, indent=4))  
-       
-    except Exception as e:
-        logger.error("Error invoice credit: %s", str(e))
-        return None
-
 
 @time_execution
 def classifier_invoice_lc_ameco(pages):
@@ -96,7 +31,7 @@ def classifier_invoice_lc_ameco(pages):
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None
-    
+
 @time_execution
 def classifier_invoice_ameco(pages):
     try:
@@ -110,19 +45,29 @@ def classifier_invoice_ameco(pages):
             text = page.extract_text().split('\n')
             for i, line_row in enumerate(text):
                 line_row = line_row.strip()
+                if "Date/Invoice Number" in line_row:
+                    if i + 1 < len(text):
+                        next_line = text[i + 1]
+                        pattern = r"(\d{4}\.\d{1,2}\.\d{1,2})\s*/\s*(\d+)"
+                        match = re.search(pattern, next_line)
 
+                        if match:
+                            page_data['date'] = match.group(1)
+                            page_data['invoice_number'] = match.group(2)
                 if 'Description Amount' in line_row:
                     extracting = True
                     continue
                 if 'Total amount' in line_row:
-                    logger.info("%s", line_row)
+                    #logger.info("%s", line_row)
                     extracting = False
                     total_pattern = r'Total amount[:\uFF1A]?\s([\d,]+\.\d{2})\s(USD|EUR|GBP|JPY|CNY)'
 
                     total_match = re.search(total_pattern, line_row)
                     if total_match:
-                        total_amount = to_float(total_match.group(1)) if total_match.group(1) else ""
-                        currency = total_match.group(2) if total_match.group(2) else ""
+                        total_amount = to_float(total_match.group(1))
+                        #logger.info("%s", total_match.group(1))
+                        currency = total_match.group(2)
+                        #logger.info("%s ==== %s", total_amount, currency)
                         dict_total['amount'] = total_amount
                         dict_total['currency'] = currency
                         page_data['total_amount'] = dict_total
@@ -133,17 +78,17 @@ def classifier_invoice_ameco(pages):
                     if charge_match:
                         pattern = r'-(.*?)\s([\d,]+\.\d{2})\s(USD|EUR|GBP|JPY|CNY)'
                         match = re.search(pattern, charge_match.group(0))
-                        
+
                         if match:
                             model =  Details()
-                            description = match.group(1).strip() if match.group(1) else ""
-                            total = to_float(match.group(2)) if match.group(2) else ""
-                            currency = match.group(3) if match.group(3) else ""
+                            description = match.group(1).strip()
+                            total = to_float(match.group(2))
+                            currency = match.group(3)
 
                             model.description = description
                             model.total = total
                             model.currency = currency
-                            
+
                             list_table.append(model.to_dict())
         page_data['description'] = list_table
         # write_json_to_file(page_data)
@@ -151,7 +96,7 @@ def classifier_invoice_ameco(pages):
     except Exception as e:
         logger.error("Error invoice credit: %s", str(e))
         return None
-    
+
 @time_execution
 def classifier_invoice_ameco_3(pages):
     try:
@@ -165,18 +110,30 @@ def classifier_invoice_ameco_3(pages):
         list_table_crpl = []
         list_table_lru = []
         list_table_llp = []
-        
+
         key = keyword(ameco)
         replacable_parts_list = False
         contract_repair_part_list = False
         lru_list = False
         llp_list = False
-        
+
         for p_idx, page in enumerate(pages):
-            
+
             text = page.extract_text().split('\n')
+            pattern_serial = r"序号\s+(P/N:[A-Za-z0-9\-]+)"
+            pattern_project_number = r"产品项目号：([A-Za-z0-9\-]+)"
             for i, line in enumerate(text):
+                #logger.info("%s", line)
                 """Extracting data from Replacable Parts List"""
+                try:
+                    match_serial = re.search(pattern_serial, line)
+                    if match_serial:
+                        page_data["serial_number"] = match_serial.group(1)
+
+                    match_project_number = re.search(pattern_project_number, line)
+                    if match_project_number:
+                        page_data["invoice_number"] = match_project_number.group(1)
+                except: pass
                 try:
                     if 'Replacable Parts List' in line:
                         replacable_parts_list = True
@@ -185,13 +142,13 @@ def classifier_invoice_ameco_3(pages):
                 if replacable_parts_list:
                         if 'A1--小计/SUBTOTAL (USD) :' in line:
                             values = line.split('$')
-                            sub_total_total_price = to_float(to_string(values[1].replace(' ', ''))) if values[1] else 0
-                            sub_total_handling = to_float(to_string(values[2]).replace(' ', '')) if values[2] else 0
+                            sub_total_total_price =to_float(to_string(values[1].replace(' ', '')))
+                            sub_total_handling = to_float(to_string(values[2]).replace(' ', ''))
                             rpl_total['sub_total_total_price'] = sub_total_total_price
                             rpl_total['sub_total_handling'] = sub_total_handling
                         elif 'A3—合计TOTAL (USD)' in line:
                             values = line.split('$')
-                            total = to_float(to_string(values[1].replace(' ', ''))) if values[1] else 0
+                            total = to_float(to_string(values[1].replace(' ', '')))
                             rpl_total['total'] = total
                             replacable_parts_list = False
                         else:
@@ -199,16 +156,16 @@ def classifier_invoice_ameco_3(pages):
                             match = re.search(pattern, line)
                             if match:
                                 model = Details()
-                                model.item = to_int(match.group(1)) if match.group(1) else 0
-                                model.part_number = match.group(2) if match.group(2) else ""
-                                model.description = match.group(3) if match.group(3) else ""
-                                model.quantity = to_int(match.group(4)) if match.group(4) else 0
-                                model.unit = match.group(5) if match.group(5) else ""
+                                model.item = to_int(match.group(1))
+                                model.part_number = match.group(2)
+                                model.description = match.group(3)
+                                model.quantity = to_int(match.group(4))
+                                model.unit = match.group(5)
                                 model.clp = to_float(match.group(6)) if match.group(6) not in [None, ''] else 0
-                                model.unit_price = to_float(match.group(7)) if match.group(7) not in [None, ''] else 0
-                                model.total_price = to_float(match.group(8)) if match.group(8) not in [None, ''] else 0
+                                model.unit_price = to_float(match.group(7))
+                                model.total_price = to_float(match.group(8))
                                 model.handling = to_float(match.group(9)) if match.group(9) not in [None, ''] else 0
-                                model.remark = match.group(10) if match.group(10) else ""
+                                model.remark = match.group(10)
                                 list_table_rpl.append(model.to_dict())
                 """
                 Extracting data from Contract repair Parts List
@@ -221,13 +178,13 @@ def classifier_invoice_ameco_3(pages):
                 if contract_repair_part_list:
                     if 'B1--小计/SUBTOTAL (USD) :' in line:
                         values = line.split('$')
-                        sub_total_total_price =to_float(to_string(values[1].replace(' ', ''))) if values[1] else 0
-                        sub_total_subcontract_fee = to_float(to_string(values[2]).replace(' ', '')) if values[2] else 0
+                        sub_total_total_price =to_float(to_string(values[1].replace(' ', '')))
+                        sub_total_subcontract_fee = to_float(to_string(values[2]).replace(' ', ''))
                         crpl_total['sub_total_total_price'] = sub_total_total_price
                         crpl_total['sub_total_subcontract_fee'] = sub_total_subcontract_fee
                     elif 'B3—合计TOTAL (USD)' in line:
                         values = line.split('$')
-                        total = to_float(to_string(values[1].replace(' ', ''))) if values[1] else 0
+                        total = to_float(to_string(values[1].replace(' ', '')))
                         crpl_total['total'] = total
                         contract_repair_part_list = False
                     else:
@@ -235,41 +192,41 @@ def classifier_invoice_ameco_3(pages):
                         match = re.search(pattern, line)
                         if match:
                             model = Details()
-                            model.item = to_int(match.group(1)) if match.group(1) else 0
-                            model.part_number = match.group(2) if match.group(2) else ""
-                            model.description = match.group(3) if match.group(3) else ""
-                            model.quantity = to_int(match.group(4)) if match.group(4) else 0
-                            model.unit = match.group(5) if match.group(5) else ""
+                            model.item = to_int(match.group(1))
+                            model.part_number = match.group(2)
+                            model.description = match.group(3)
+                            model.quantity = to_int(match.group(4))
+                            model.unit = match.group(5)
                             model.cunit = to_float(match.group(6)) if match.group(6) not in [None, ''] else 0
-                            model.usdunit = to_float(match.group(7)) if match.group(7) not in [None, ''] else 0
-                            model.total_price = to_float(match.group(8)) if match.group(8) not in [None, ''] else 0
+                            model.usdunit = to_float(match.group(7))
+                            model.total_price = to_float(match.group(8))
                             model.subcontract_fees = to_float(match.group(9)) if match.group(9) not in [None, ''] else 0
-                            model.remarks = match.group(10) if match.group(10) else ""
+                            model.remarks = match.group(10)
                             list_table_crpl.append(model.to_dict())
                 """Extracting data from LRU List"""
                 try:
                     if 'LRU List' in line:
-                        lru_list = True  
+                        lru_list = True
                     pass
                 except: pass
                 if lru_list:
                     if 'C1--小计/SUBTOTAL (USD) :' in line:
                         values = line.split('$')
-                        sub_total_total_price =to_float(to_string(values[1].replace(' ', ''))) if values[1] else 0
-                        sub_total_handling = to_float(to_string(values[2]).replace(' ', '')) if values[2] else 0
+                        sub_total_total_price =to_float(to_string(values[1].replace(' ', '')))
+                        sub_total_handling = to_float(to_string(values[2]).replace(' ', ''))
                         lru_total['sub_total_total_price'] = sub_total_total_price
                         lru_total['sub_total_handling_fee'] = sub_total_handling
                     elif 'C2--Testing fees测试费用 (USD)' in line:
                         values = line.split('$')
-                        handling_fee = to_float(to_string(values[1].replace(' ', ''))) if values[1] else 0
+                        handling_fee = to_float(to_string(values[1].replace(' ', '')))
                         lru_total['testing_fee'] = handling_fee
                     elif 'C3--Subcontract修理费用 (USD)' in line:
                         values = line.split('$')
-                        sub_total_subcontract_fee = to_float(to_string(values[1].replace(' ', ''))) if values[1] else 0
+                        sub_total_subcontract_fee = to_float(to_string(values[1].replace(' ', '')))
                         lru_total['sub_total_subcontract_fee'] = sub_total_subcontract_fee
                     elif 'C5—合计TOTAL (USD)' in line:
                         values = line.split('$')
-                        total = to_float(to_string(values[1].replace(' ', ''))) if values[1] else 0
+                        total = to_float(to_string(values[1].replace(' ', '')))
                         lru_total['total'] = total
                         lru_list = False
                     else:
@@ -277,16 +234,16 @@ def classifier_invoice_ameco_3(pages):
                         match = re.search(pattern, line)
                         if match:
                             model = Details()
-                            model.item = to_int(match.group(1)) if match.group(1) else ""
-                            model.part_number = match.group(2) if match.group(2) else ""
-                            model.description = match.group(3) if match.group(3) else ""
-                            model.quantity = to_int(match.group(4)) if match.group(4) else 0
-                            model.unit = match.group(5) if match.group(5) else ""
-                            model.usdunit = to_float(match.group(6)) if match.group(6) not in [None, ''] else 0
-                            model.total_price = to_float(match.group(7)) if match.group(7) not in [None, ''] else 0
+                            model.item = to_int(match.group(1))
+                            model.part_number = match.group(2)
+                            model.description = match.group(3)
+                            model.quantity = to_int(match.group(4))
+                            model.unit = match.group(5)
+                            model.usdunit = to_float(match.group(6))
+                            model.total_price = to_float(match.group(7))
                             model.handling = to_float(match.group(8)) if match.group(8) not in [None, ''] else 0
-                            model.remarks = match.group(9) if match.group(9) else ""
-                            list_table_lru.append(model.to_dict()) 
+                            model.remarks = match.group(9)
+                            list_table_lru.append(model.to_dict())
                 """Extracting data from LLP List"""
                 try:
                     if 'LLP List' in line:
@@ -296,13 +253,13 @@ def classifier_invoice_ameco_3(pages):
                 if llp_list:
                     if 'D1--小计/SUBTOTAL (USD) :' in line:
                         values = line.split('$')
-                        sub_total_total_price =to_float(to_string(values[1].replace(' ', ''))) if values[1] else 0
-                        sub_total_handling = to_float(to_string(values[2]).replace(' ', '')) if values[2] else 0
+                        sub_total_total_price =to_float(to_string(values[1].replace(' ', '')))
+                        sub_total_handling = to_float(to_string(values[2]).replace(' ', ''))
                         llp_total['sub_total_total_price'] = sub_total_total_price
                         llp_total['sub_total_handling'] = sub_total_handling
                     elif 'D3—合计TOTAL (USD)' in line:
                         values = line.split('$')
-                        total = to_float(to_string(values[1].replace(' ', ''))) if values[1] else 0
+                        total = to_float(to_string(values[1].replace(' ', '')))
                         llp_total['total'] = total
                         llp_list = False
                     else:
@@ -310,17 +267,17 @@ def classifier_invoice_ameco_3(pages):
                         match = re.search(pattern, line)
                         if match:
                             model = Details()
-                            model.item = to_int(match.group(1)) if match.group(1) else 0
-                            model.part_number = match.group(2) if match.group(2) else ""
-                            model.description = match.group(3) if match.group(3) else ""
-                            model.quantity = to_int(match.group(4)) if match.group(4) else 0
-                            model.unit = match.group(5) if match.group(5) else ""
+                            model.item = to_int(match.group(1))
+                            model.part_number = match.group(2)
+                            model.description = match.group(3)
+                            model.quantity = to_int(match.group(4))
+                            model.unit = match.group(5)
                             model.clp = to_float(match.group(6)) if match.group(6) not in [None, ''] else 0
-                            model.usdunit = to_float(match.group(7)) if match.group(7) not in [None, ''] else 0
-                            model.total_price = to_float(match.group(8)) if match.group(8) not in [None, ''] else 0
+                            model.usdunit = to_float(match.group(7))
+                            model.total_price = to_float(match.group(8))
                             model.handling = to_float(match.group(9)) if match.group(9) not in [None, ''] else 0
-                            model.remark = match.group(10) if match.group(10) else ""
-                            list_table_llp.append(model.to_dict())       
+                            model.remark = match.group(10)
+                            list_table_llp.append(model.to_dict())
             tables = page.extract_tables()
             for table in tables:
                 header = None
@@ -353,8 +310,10 @@ def classifier_invoice_ameco_3(pages):
         page_data['lru_total'] = lru_total
         page_data['table_llp'] = list_table_llp
         page_data['llp_total'] = llp_total
-        # write_json_to_file(page_data)
-        print(json.dumps(page_data, indent=4))
+        if "serial_number" not in page_data or not page_data["serial_number"]:
+            return classifier_invoice_ameco(pages)
+        write_json_to_file(page_data)
+        #print(json.dumps(page_data, indent=4))
 
     except Exception as e:
         logger.error("Error invoice credit %s", str(e))
